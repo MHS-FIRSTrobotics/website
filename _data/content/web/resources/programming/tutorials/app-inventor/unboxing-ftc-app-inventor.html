@@ -1,0 +1,99 @@
+id: 93
+pagetitle: 'Unboxing FTC App Inventor'
+longtitle: 'Taking the FTC App Inventor out of VirtualBox'
+alias: unboxing-ftc-app-inventor
+published: 1
+parent: 92
+introtext: ''
+richtext: 0
+template: 16
+createdby: 1
+createdon: 1454892293
+publishedon: 1454892240
+publishedby: 1
+uri: resources/programming/tutorials/app-inventor/unboxing-ftc-app-inventor.html
+properties: null
+tvs: {  }
+
+-----
+
+<div class="text-left">
+    <div class="alert alert-info">
+         This guide assumes you have access to a working copy of the App Inventor provided by FIRST. You can get it <a href="http://frc-events.usfirst.org/FTCImages/2016">here</a>.
+    </div>
+<h2>Setting up the VM for an easy move</h2>
+<p>The App Inventor source is fairly big (and has a lot of files in it). So, we are going to zip up the App Inventor code for easy transport. Open a Terminal, (press <kbd><kbd>Windows Key</kbd> + <kbd>T</kbd></kbd> or <kbd><kbd>Command</kbd> + <kbd>T</kbd></kbd>)
+and type: <code><kbd>sudo apt-get install vsftpd</kbd></code>. The password when prompted is <kbd>ftc</kbd>, unless you have changed it, press <kbd>y</kbd>, if prompted to accept changes. After the last command completes, type <kbd>cd ~</kbd> to verify you are in the home directory (~), and then type <kbd>zip -r ai.zip ai</kbd>, this should create a new file <code>ai.zip</code> in your home directory.
+
+<h2>Configuring your computer to handle App Inventor</h2>
+<ol>
+<li>Download and extract Google App Engine (Java) from <a href="https://cloud.google.com/appengine/downloads">here</a>.</li>
+<li>Download and extract Ant from <a href="http://apache.mirrors.ionfish.org//ant/binaries/apache-ant-1.9.6-bin.zip">here</a>.
+<li><p>Open a File Explorer, and type <kbd>ftp://yourFtcAppServerAddress</kbd>, replace <code>yourFtcAppServerAddress</code> with the IP address of the FTC App Inventor server, for example <code>192.168.56.35</code>. This should look something like <code>ftp://192.168.56.35</code>. When you are asked for authentication, your username and password is <code>ftc</code> and <code>ftc</code>, respectively. You should end up in your home directory which contains <code>ai.zip</code>.</p>
+
+<p>This should look something like:
+<img alt="Typing in the address" title="Typing in the address" src="http://mhsrobotics.peoplepluscomputers.com/assets/images/tutorials/unbox-ai/address.png"></img><br>
+<small class="caption">Type in your FTC App Inventor IP prepended by <kbd>ftp://</kbd>.</small>
+<br><br>
+<img alt="Loging on the VirtualBox AI server" alt="Using the given credentials to login in to the VirtualBox AI server" src="http://mhsrobotics.peoplepluscomputers.com/assets/images/tutorials/unbox-ai/login.png"></img><br>
+<small>Use the username <kbd>ftc</kbd> and the password <kbd>ftc</kbd> to log on the FTP server installed on the App Inventor server.</small>
+</p>
+</li>
+
+<li><p>Copy it to your computer, then extract the archive. If you have issues about the zip being invalid, download and install 7-Zip to open the zip file from <a href="http://www.7-zip.org/download.html">here</a>.</p>
+
+<p>This process should look should similar to below. Replace <code>192.168.281</code> in the photos with your the IP Address of the FTC App Inventor.
+<img alt="Selecting ai.zip from the AI server's ftc user home directory" title="Selecting the ai.zip archive to take out of the AI server" src="http://mhsrobotics.peoplepluscomputers.com/assets/images/tutorials/unbox-ai/fileToGrab.png"></img><br>
+<small>In the ftc user's home directory, <code>/home/ftc</code>, select the archive <code>ai.zip</code>, and copy it to a place on your computer, such as your desktop, documents, downloads, etc.</small>
+<br><br></li>
+
+<li><p>Now for the interesting part, create a directory and create 3 batch files (end them in a <code>.bat</code> extension to make them a Batch file), in one of them type, replace <code>otherBat1.bat</code> and <code>otherBat2.bat</code> with the names of the other batch files:
+<pre><code>
+@echo off
+
+start otherBat1.bat
+start otherBat2.bat
+</code></pre>
+
+The contents of the second file are:
+<pre><code>
+@echo off
+
+pathToExtractedGoogleSdk\bin\dev_appserver.cmd --port=80 --address=0.0.0.0 pathToExtractedFtcAppInventor\ai\appinventor-sources\appinventor\appengine\build\war
+</code></pre>
+
+And not least, but last, the contents of the third file:
+<pre><code>
+@echo off
+
+cd pathToExtractedFtcAppInventor\appinventor-sources\appinventor\buildserver
+pathToExtractedAnt\bin\ant.bat RunLocalBuildServer
+</code></pre>
+</p>
+<p>This should look something like:
+<img alt="Creating an new text file" title="Creating a new file" src="http://mhsrobotics.peoplepluscomputers.com/assets/images/tutorials/unbox-ai/new_batch_1.png"></img><br>
+<small class="caption">Right-click on blank space in a folder you want to use, select New..., then click Text Document</small>
+<br><br>
+<img alt="Result of last step" title="Result of prior step." src="http://mhsrobotics.peoplepluscomputers.com/assets/images/tutorials/unbox-ai/new_batch_2.png"></img><br>
+<small class="caption">Your folder should now have a new text file in it, select all the text, and type in what you want to call it, assuming you have no spaces in your planned name. Be sure you end the file, with a <code>.bat</code> extension.</small>
+<br><br>
+<img alt="Correctly named example" title="Your folder should now resemble this" src="http://mhsrobotics.peoplepluscomputers.com/assets/images/tutorials/unbox-ai/new_batch_3.png"></img><br>
+<small class="caption">This should get you a file that looks something look what is shown.</small>
+<br><br>
+<img alt="Repeat for three new .bat files" title="Repeat these batch creation steps for three new files" src="http://mhsrobotics.peoplepluscomputers.com/assets/images/tutorials/unbox-ai/new_batch_4.png"></img><br>
+<small class="caption">Repeat the above steps until you have new batch files in your folder.</small>
+<br><br>
+<img alt="Selecting Edit off the context menu" title="Select Edit off the context menu for your primary script" src="http://mhsrobotics.peoplepluscomputers.com/assets/images/tutorials/unbox-ai/new_batch_5.png"></img><br>
+<small class="caption">Right-click your primary batch script, <code>main.bat</code> above, and select Edit</small>
+<br><br>
+<img alt="Copying the code into Notepad" title="Copy the script above into Notepad" src="http://mhsrobotics.peoplepluscomputers.com/assets/images/tutorials/unbox-ai/writeFirstBat.png"></img><br>
+<small class="caption">Copy the first script above into the Notepad window. Use the code above the photo, if the code above and the photo don't match. Repeat using the corresponding script above for each respective file.</small>
+<br><br>
+</p>
+</li>
+<li>Run the first batch file, wait for all of the output to stop in both open windows and try browsing to the address <kbd>localhost</kbd> in your browser, you should be at the AI Login page. If not, something went wrong.</li>
+<li><p>Open the Task Scheduler (type <kbd>Task Sceduler</kbd> into the Start Menu) In it, on the left pane, right-click Task Scheduler Library, select "Create Basic Task..." Name it something descriptive when prompted. Chose "When the Computer Starts..." when asked when the Task should run. Leave the default choose of "Start a Program" when asked to tell what the task should do. On the program/script option, browse to where your first script is, and select it. Click Next, then Finish.</p></li>
+<li>Try restarting your computer, then go the <code>localhost</code> in your web browser, you should see the App Inventor Login Page.</li>
+<ol>
+
+</div>

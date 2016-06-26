@@ -1,0 +1,4 @@
+key: richtext_default
+value: '0'
+xtype: combo-boolean
+area: manager

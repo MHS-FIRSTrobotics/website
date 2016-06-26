@@ -1,0 +1,4 @@
+key: use_editor
+value: '0'
+xtype: combo-boolean
+area: editor

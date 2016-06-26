@@ -1,0 +1,4 @@
+key: cache_db
+value: '1'
+xtype: combo-boolean
+area: caching

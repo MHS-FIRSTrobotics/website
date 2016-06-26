@@ -1,0 +1,41 @@
+id: 24
+templatename: Article-NC
+description: 'The main page template'
+category: Content
+properties: 'a:0:{}'
+
+-----
+
+<!doctype html>
+<html lang="en" ng-app="mhsrobotics">
+<head>
+  <meta charset="utf-8">
+  <base href="//mustangrobotics.club" />
+  <title>[[*pagetitle]] | [[++site_name]]</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, user-scalable=no">
+  <meta rel="prefetch" href="https://mustangrobotics.club/assets/images/background/back0.png" />
+  [[$standard-css-bf]]
+</head>
+<body>
+	<!-- Begin Container -->
+  <div id="container-fluid">
+  	<div class="wrapper">
+		<!-- Begin Page Content -->
+		<div id="content">
+		  <div id="page">
+			<div id="page-content">
+			  [[$guide-header-nc]]
+			  [[*content:typography]]
+			</div>  
+		  </div>
+		</div>
+		[[$Footer]]
+	</div>
+	<!--End Page Content-->
+  [[$MustangRobotNavbar]]
+  </div>
+  <!-- End Container -->
+  [[$standard-css-af_js]]
+  [[$standard-js]]
+</body>
+</html>

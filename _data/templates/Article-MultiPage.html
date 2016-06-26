@@ -1,0 +1,42 @@
+id: 17
+templatename: Article-MultiPage
+description: 'The main page template'
+category: Content
+properties: 'a:0:{}'
+
+-----
+
+<!doctype html>
+<html lang="en" ng-app="mhsrobotics">
+<head>
+  <meta charset="utf-8">
+  <base href="[[++site_url]]" />
+  <title>[[*pagetitle]] | [[++site_name]]</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, user-scalable=no">
+  <meta rel="prefetch" href="http://mhsrobotics.peoplepluscomputers.com/assets/images/background/back0.png" />
+  [[$standard-css-bf]]
+</head>
+<body>
+	<!-- Begin Container -->
+  <div id="container-fluid">
+	<!-- Begin Page Content -->
+	<div id="page">
+	  <div id="page-content">
+	  	[[$guide-header]]
+		<div class="text-justify">
+		[[*content:typography]]
+		</div>
+		 <div class="paging">
+		 [[$Paging]]
+</div>
+
+	  </div>
+	</div>
+	<!--End Page Content-->
+  [[$MustangRobotNavbar]]
+  </div>
+  <!-- End Container -->
+  [[$standard-css-af_js]]
+  [[$standard-js]]
+</body>
+</html>

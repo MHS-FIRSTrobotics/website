@@ -1,0 +1,4 @@
+key: updater.core_notifications_mail
+value: admin@mhsrobotics.peoplepluscomputers.com
+namespace: updater
+area: '(2) Notifications: Core'

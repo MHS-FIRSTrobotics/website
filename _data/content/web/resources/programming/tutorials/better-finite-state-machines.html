@@ -1,0 +1,993 @@
+id: 91
+pagetitle: 'Better Finite State Machines'
+longtitle: 'Writing More Effective Finite State Machines'
+alias: better-finite-state-machines
+published: 1
+parent: 84
+introtext: ''
+richtext: 0
+template: 16
+menuindex: 2
+createdby: 1
+createdon: 1454892206
+publishedon: 1454892216
+publishedby: 1
+uri: resources/programming/tutorials/better-finite-state-machines.html
+properties: null
+tvs: {  }
+
+-----
+
+<div class="text-left">
+<p>Lots of people use a finite state machine to program complex systems. Lots of times these state machines get excessively complicated in order to accomplish relatively simple tasks, like turning on a motor and then turning off a motor and turning on a light. This system could be described in two states <code>MOTOR_ON</code> and <code>LED_ON</code>, with each of these events being mutually exclusive. Now imagine yourself in a situation where a person wants to interrupt our nice scheme of switching between those states every 1/10th of a second. You start needing to keep track of everything in order to know what your next action will be. The same logic applies to coding, this is where <abbr>FSM</abbr>s come in to play, they will keep track of every state for you, as well as making the code development easier for the developers</p>
+
+<p>Lots of people use an enumeration of the possible states for the state machine to implement. This, then, is fleshed out in a switch statement. The problems with this model, although initially simple, is that the what can go wrong factor increases faster than if you used a solution designed for the long-term. The long-term solution needs to be modular and flexible. This moduluarity is accomplished via utilizing object-oriented programming principles to make the code cleaner, thus making the code more maintainable.</p>
+
+<h3>How is this solution more effective?</h3>
+<p>This system relies on the programmer inheriting a predefined interface <code>State</code> into an <code>enum</code> structure. The code then uses the enumeration of values in the <code>enum</code>. The programmer passes the init level of the enumeration to the state machine, and the state machine takes care of running the code. Some issues presented in running code from inside an enum is accessing variables outside of the <code>enum</code>. To correct this, the state machine is injecting the various states with the core components of the OpMode, by getting the values directly from the OpMode. The fields of the class must be adhering to a certain pattern in order to get the values from the state machine.
+<code>Telemetry telemetry;</code> will load the <code>OpMode</code>'s value of telemetry into that state, regardless of access modifier (like <code>public</code>, <code>private</code>...). The variable name is case sensitive, and the type must be correct for the procedure to work.<p>
+<h4>Signatures of Injectable variables</h4>
+<ul>
+<li><code>Telemetry telemetry; // telemetry</code></li>
+<li><code>Gamepad gamepad1; // gamepad 1</code></li>
+<li><code>Gamepad gamepad2; // gamepad 2</code></li>
+<li><code>HardwareMap hardwareMap; // hardware map</code></li>
+</ul>
+
+<h3>Support for other libraries <small>Libraries that make the FTC SDK more pleasant</small></h3>
+<p>Support for the Xtensible library will eventually be builtin, and much cleaner to use, as well as being less specific in what the variables' names need to be. If you want this to be supported in other libraries, ask your library project maintainer></p>
+
+
+<h2>How do I use this?</h2>
+<p>Save the source (click <a href="[[~89]]#source">here</a> or scroll down) to a new Java class named "FiniteStateMachine"). Then, create a new <code>OpMode</code> (or a class you want to use this in). Now, you will need a new <code>enum</code> placed either inside the <code>class</code>, or in a new file (recommended for large programs). </p>
+<p>The <code>enum</code> must implement the <code>State</code> interface, in order to do that you need to add the following to implement the interface: <code>implements FiniteStateMachine.State</code>. You may see a red, wavy line under the enum declaration. This is okay for now. Inside <code>enum</code> type the name for your first state, then press <kbd>Space</kbd>, then add the following <code>{},</code>. Now you should see an red, wavy line under your state name, move your cursor over to it, and click it, afterwards press <kbd><kbd>Alt</kbd> + <kbd>Enter</kbd></kbd>, and select "Implement methods..." from the drop-down menu. When prompted make sure everything is selected, and click "Ok." You should see two methods created: <code>public boolean stateChange()</code> and <code>public void execute()</code>. The former of those two returns <code>true</code> when the state needs to change to the next level (the next entry within the enum). Repeat the same process for the next entry starting after the comma you typed error (you probably thought the comma was an error, it wasn't), this time omitting the comma. You should see something that looks like:
+<pre><code>
+enum States implements FiniteStateMachine.State {
+    INIT {
+        @Override
+        public boolean stateChange() {
+            return true;
+        }
+
+        @Override
+        public void execute() {
+
+        }
+    }, LOOP {
+        @Override
+        public boolean stateChange() {
+            return false;
+        }
+
+        @Override
+        public void execute() {
+
+        }
+    }
+</code></pre></p>
+<p>Now for the <code>OpMode</code>, you will need to persist the state machine across the instance of the class, so at the very top of the OpMode (below the name of the open mode), type <code>private FiniteStateMachine fsm; // really think about using a more descriptive name</code> Now, it is neccessary to instaniate a new instance of the state machine (a fancy way to say to create an instance of), type the following into your <code>init</code> method (looks like <code>public void init() { /*...*/ }</code>, replace the <code>/*...*/</code> with what I tell you) method: <code>fsm = new FiniteStateMachine(INIT, this);</code> replacing the <code>INIT</code> with a the name of the first entry in the enum created earlier. The <code>loop</code> method needs one line in its body (the <code>/* code */</code> in <code>public void loop() { /* code */ }</code>), this would be <code>fsm.execute()</code>. Now, you have to Finite State Machine! Enjoy it!</p>
+<h3>Examples</h3>
+<ul>
+<li><a href="[[~89]]#examples">Barebones</a></li>
+<li><a href="[[~89]]#example-pushbotauto">Push Bot Auto</a></li>
+</ul>
+
+<a name="source"></a><h2>Source</h2>
+<p>
+<pre><code>
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.robocol.Telemetry;
+
+import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.EnumSet;
+import java.util.LinkedList;
+
+public class FiniteStateMachine&lt;STATE extends Enum & FiniteStateMachine.State, T extends OpMode&gt; {
+    private int index;
+    private LinkedList&lt;STATE&gt; states;
+    private T opMode;
+
+    private FiniteStateMachine(T opMode) {
+        this.opMode = checkNotNull(opMode);
+    }
+
+    /**
+     * Creates an Finite State Machine with the states described in the class declaration of the
+     * &lt;code&gt;enum&lt;/code&gt;. The OpMode is a reference to your OpMode to get the dependencies of state,
+     * and inject them into the state
+     * 
+     * @param enumeration the class of the enum containing the states
+     * @param opMode the active {@link OpMode} to get dependencies from
+     */
+    public FiniteStateMachine(Class&lt;? extends STATE&gt; enumeration, T opMode) throws NullPointerException {
+        this(opMode);
+        states = new LinkedList&lt;STATE&gt;(EnumSet.allOf(checkNotNull(enumeration)));
+        index = 0;
+    }
+
+    /**
+     * Creates a Finite State Machine with the given {@link State} array being the available states.
+     * The OpMode is a reference to your OpMode to get the dependencies of state,
+     * and inject them into the state
+     * 
+     * @param states an array of states
+     * @param opMode the active {@link OpMode} to get dependencies from
+     * @throws NullPointerException when either the &lt;code&gt;states&lt;/code&gt; or &lt;code&gt;opMode&lt;/code&gt; parameter
+     *                              is null
+     */
+    public FiniteStateMachine(STATE[] states, T opMode) throws NullPointerException {
+        this(checkNotNull(opMode));
+        this.states = getListFromEnum(checkNotNull(states));
+        index = 0;
+    }
+
+    /**
+     * Creates a Finite State Machine with the given start {@link State}. The rest of the states are
+     * then infered to be the other elements within the enum that the start state is. The OpMode is 
+     * a reference to your OpMode to get the dependencies of state, and inject them into the state
+     *
+     * @param state the start state of the Finite State Machine
+     * @param opMode the active {@link OpMode} to get dependencies from
+     * @throws NullPointerException when either the &lt;code&gt;states&lt;/code&gt; or &lt;code&gt;opMode&lt;/code&gt; parameter
+     *                              is null
+     */
+    public FiniteStateMachine(STATE state, T opMode) throws NullPointerException {
+        this(checkNotNull(state.getDeclaringClass()), opMode);
+        index = state.ordinal();
+    }
+
+    /**
+     * Executes the current state once by running the {@link State#execute()}, then checks to see if
+     * the state needs to be changed by running the {@link State#changeState(Enum)} method of the
+     * currently running state
+     */
+    public void execute() {
+        if (index == -1) {
+            return;
+        }
+
+        STATE state = states.get(index);
+        if (state.name().equalsIgnoreCase("NOTHING"))
+
+        // Inject requested variables
+        inject(state, "hardwareMap", HardwareMap.class, opMode.hardwareMap);
+        inject(state, "gamepad1", Gamepad.class, opMode.gamepad1);
+        inject(state, "gamepad2", Gamepad.class, opMode.gamepad2);
+        inject(state, "telemetry", Telemetry.class, opMode.telemetry);
+        inject(state, "opMode", opMode.getClass(), opMode);
+
+        state.execute();
+        if (state.stateChange()) {
+            index = ++index;
+            if (index &gt; states.size()) {
+                index = -1;
+            }
+        }
+    }
+
+    /**
+     * The index of the current {@link State} in the set of possible &lt;code&gt;State&lt;/code&gt;s
+     * 
+     * @return the index of the current states
+     */
+    public int index() {
+        return index;
+    }
+
+    /**
+     * Returns the currently running state
+     * 
+     * @return the current state
+     */
+    public STATE state() {
+        return states.get(index);
+    }
+
+    /**
+     * Changes the state to specified {@link State}
+     * 
+     * @param state the new state to switch to
+     * @throws NullPointerException if the given state is &lt;code&gt;null&lt;/code&gt;
+     */
+    public void changeState(STATE state) throws NullPointerException {
+        index = checkNotNull(state).ordinal();
+    }
+
+    private &lt;TYPE&gt; void inject(STATE object, String name, Class&lt;? extends TYPE&gt; type, TYPE value) {
+        try {
+            Field field = object.getClass().getDeclaredField(name);
+            if (!field.getType().equals(type)) {
+                return;
+            }
+
+            boolean wasAccessible = field.isAccessible();
+            if (!wasAccessible) {
+                field.setAccessible(true);
+            }
+
+            if (field.get(object) == null) {
+                field.set(object, value);
+            }
+
+            if (!wasAccessible) {
+                field.setAccessible(false);
+            }
+        } catch (IllegalAccessException|NoSuchFieldException ignored) {}
+    }
+
+    private LinkedList&lt;STATE&gt; getListFromEnum(STATE[] states) {
+        return new LinkedList&lt;STATE&gt;(Arrays.asList(states));
+    }
+
+    private static &lt;T&gt;  T checkNotNull(T ref) {
+        if (ref == null) {
+            throw new NullPointerException();
+        }
+
+        return ref;
+    }
+
+    /**
+     * The definition of a state for use by this FSM.
+     */
+    public interface State {
+        /**
+         * Returns whether or not to change the state to the next state, called once for every {@link FiniteStateMachine#execute()}
+         * that is called, and after the {@link #execute()} is called
+         * 
+         * @return &lt;code&gt;true&lt;/code&gt;, if the state should transition to the next state; &lt;code&gt;false&lt;/code&gt; otherwise
+         */
+        boolean stateChange();
+
+        /**
+         * The main executing method, called once for each time {@link FiniteStateMachine#execute()}
+         * is called, and before {@link #stateChange()} is called.
+         */
+        void execute();
+    }
+}
+</code></pre>
+</p>
+
+<a name="arbitrary-fsm-source"></a><h3>Arbitrary Order State Machine</h3>
+<pre><code>
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.robocol.Telemetry;
+
+import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.EnumSet;
+import java.util.LinkedList;
+
+public class FiniteStateMachine2&lt;STATE extends Enum & FiniteStateMachine2.State, T extends OpMode&gt; {
+    private int index;
+    private LinkedList&lt;STATE&gt; states;
+    private T opMode;
+
+    private FiniteStateMachine2(T opMode) {
+        this.opMode = checkNotNull(opMode);
+    }
+
+    /**
+     * Creates an Finite State Machine with the states described in the class declaration of the
+     * &lt;code&gt;enum&lt;/code&gt;. The OpMode is a reference to your OpMode to get the dependencies of state,
+     * and inject them into the state
+     *
+     * @param enumeration the class of the enum containing the states
+     * @param opMode the active {@link OpMode} to get dependencies from
+     */
+    public FiniteStateMachine2(Class&lt;? extends STATE&gt; enumeration, T opMode) throws NullPointerException {
+        this(opMode);
+        states = new LinkedList&lt;STATE&gt;(EnumSet.allOf(checkNotNull(enumeration)));
+        index = 0;
+    }
+
+    /**
+     * Creates a Finite State Machine with the given {@link State} array being the available states.
+     * The OpMode is a reference to your OpMode to get the dependencies of state,
+     * and inject them into the state
+     *
+     * @param states an array of states
+     * @param opMode the active {@link OpMode} to get dependencies from
+     * @throws NullPointerException when either the &lt;code&gt;states&lt;/code&gt; or &lt;code&gt;opMode&lt;/code&gt; parameter
+     *                              is null
+     */
+    public FiniteStateMachine2(STATE[] states, T opMode) throws NullPointerException {
+        this(checkNotNull(opMode));
+        this.states = getListFromEnum(checkNotNull(states));
+        index = 0;
+    }
+
+    /**
+     * Creates a Finite State Machine with the given start {@link State}. The rest of the states are
+     * then inferred to be the other elements within the enum that the start state is. The OpMode is
+     * a reference to your OpMode to get the dependencies of state, and inject them into the state
+     *
+     * @param state the start state of the Finite State Machine
+     * @param opMode the active {@link OpMode} to get dependencies from
+     * @throws NullPointerException when either the &lt;code&gt;states&lt;/code&gt; or &lt;code&gt;opMode&lt;/code&gt; parameter
+     *                              is null
+     */
+    public FiniteStateMachine2(STATE state, T opMode) throws NullPointerException {
+        this(checkNotNull(state.getDeclaringClass()), opMode);
+        index = state.ordinal();
+    }
+
+    public static &lt;E extends Enum & FiniteStateMachine2.State, O extends OpMode&gt; FiniteStateMachine2&lt;E, O&gt;
+        create(E state, O opMode) {
+            return new FiniteStateMachine2&lt;E, O&gt;(state, opMode);
+    }
+
+    /**
+     * Executes the current state once by running the {@link State#execute()}, then checks to see if
+     * the state needs to be changed by running the {@link State#changeState(Enum)} method of the
+     * currently running state
+     */
+    public void execute() {
+        if (index == -1) {
+            return;
+        }
+
+        STATE state = states.get(index);
+        if (state.name().equalsIgnoreCase("NOTHING"))
+
+        // Inject requested variables
+        inject(state, "hardwareMap", HardwareMap.class, opMode.hardwareMap);
+        inject(state, "gamepad1", Gamepad.class, opMode.gamepad1);
+        inject(state, "gamepad2", Gamepad.class, opMode.gamepad2);
+        inject(state, "telemetry", Telemetry.class, opMode.telemetry);
+        inject(state, "opMode", opMode.getClass(), opMode);
+
+        state.execute();
+        index = state.stateChange().ordinal();
+    }
+
+    /**
+     * The index of the current {@link State} in the set of possible &lt;code&gt;State&lt;/code&gt;s
+     *
+     * @return the index of the current states
+     */
+    public int index() {
+        return index;
+    }
+
+    /**
+     * Returns the currently running state
+     *
+     * @return the current state
+     */
+    public STATE state() {
+        return states.get(index);
+    }
+
+    /**
+     * Changes the state to specified {@link State}
+     *
+     * @param state the new state to switch to
+     * @throws NullPointerException if the given state is &lt;code&gt;null&lt;/code&gt;
+     */
+    public void changeState(STATE state) throws NullPointerException {
+        index = checkNotNull(state).ordinal();
+    }
+
+    private &lt;TYPE&gt; void inject(STATE object, String name, Class&lt;? extends TYPE&gt; type, TYPE value) {
+        try {
+            Field field = object.getClass().getDeclaredField(name);
+            if (!field.getType().equals(type)) {
+                return;
+            }
+
+            boolean wasAccessible = field.isAccessible();
+            if (!wasAccessible) {
+                field.setAccessible(true);
+            }
+
+            if (field.get(object) == null) {
+                field.set(object, value);
+            }
+
+            if (!wasAccessible) {
+                field.setAccessible(false);
+            }
+        } catch (IllegalAccessException|NoSuchFieldException ignored) {}
+    }
+
+    private LinkedList&lt;STATE&gt; getListFromEnum(STATE[] states) {
+        return new LinkedList&lt;STATE&gt;(Arrays.asList(states));
+    }
+
+    private static &lt;T&gt;  T checkNotNull(T ref) {
+        if (ref == null) {
+            throw new NullPointerException();
+        }
+
+        return ref;
+    }
+
+    /**
+     * The definition of a state for use by this FSM.
+     */
+    public interface State&lt;STATE extends Enum & FiniteStateMachine2.State&gt; {
+        /**
+         * Returns whether or not to change the state to the next state, called once for every {@link FiniteStateMachine2#execute()}
+         * that is called, and after the {@link #execute()} is called
+         *
+         * @return &lt;code&gt;true&lt;/code&gt;, if the state should transition to the next state; &lt;code&gt;false&lt;/code&gt; otherwise
+         */
+        STATE stateChange();
+
+        /**
+         * The main executing method, called once for each time {@link FiniteStateMachine2#execute()}
+         * is called, and before {@link #stateChange()} is called.
+         */
+        void execute();
+    }
+}
+</code></pre>
+
+<a name="examples"></a><h2>Examples</h2>
+<p>
+<pre><code>
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.robocol.Telemetry;
+
+import org.ftccommunity.ftcxtensible.opmodes.Autonomous;
+
+@Autonomous
+public class ExampleOpMode extends OpMode {
+    FiniteStateMachine&lt;States&gt; finiteStateMachine;
+
+    @Override
+    public void init() {
+        finiteStateMachine = new FiniteStateMachine&lt;States&gt;(States.INIT, this);
+    }
+
+    @Override
+    public void loop() {
+        finiteStateMachine.execute();
+    }
+
+}
+
+enum States implements FiniteStateMachine.State {
+    INIT {
+        private Telemetry telemetry;
+
+        @Override
+        public boolean stateChange() {
+            return true;
+        }
+
+        @Override
+        public void execute() {
+            telemetry.addData("HI", "I am " + this.name());
+        }
+    }, LOOP {
+        private Telemetry telemetry;
+
+        @Override
+        public boolean stateChange() {
+            return false;
+        }
+
+        @Override
+        public void execute() {
+            telemetry.addData("HI", "I am done. " + this.name());
+        }
+    }
+}
+
+</code></pre>
+</p>
+<a name="example-pushbotauto"></a><h3>Push Bot Auto</h3>
+<h4>Switch/Case Style</h4>
+<pre><code>
+import org.ftc.opmodes.examples.pushbot.PushBotHardware;
+
+// PushBotAuto
+public class PushBotExampleCase extends PushBotHardware {
+    /**
+     * This class member remembers which state is currently active.  When the
+     * start method is called, the state will be initialized (0).  When the loop
+     * starts, the state will change from initialize to state_1.  When state_1
+     * actions are complete, the state will change to state_2.  This implements
+     * a state machine for the loop method.
+     */
+    private int v_state = 0;
+
+    /**
+     * Perform any actions that are necessary when the OpMode is enabled.
+     * &lt;p/&gt;
+     * The system calls this member once when the OpMode is enabled.
+     */
+    @Override
+    public void start() {
+        // Call the PushBotHardware (super/base class) start method.
+        super.start();
+
+        // Reset the motor encoders on the drive wheels.
+        reset_drive_encoders();
+    } // start
+
+    /**
+     * Implement a state machine that controls the robot during auto-operation.
+     * The state machine uses a class member and encoder input to transition
+     * between states.
+     * &lt;p/&gt;
+     * The system calls this member repeatedly while the OpMode is running.
+     */
+    @Override
+    public void loop() {
+        // State: Initialize (i.e. state_0).
+        switch (v_state) {
+            // Synchronize the state machine and hardware.
+            case 0:
+                // Reset the encoders to ensure they are at a known good value.
+                reset_drive_encoders();
+                // Transition to the next state when this method is called again.
+                v_state++;
+                break;
+
+            // Drive forward until the encoders exceed the specified values.
+            case 1:
+                // Tell the system that motor encoders will be used.  This call MUST
+                // be in this state and NOT the previous or the encoders will not
+                // work.  It doesn't need to be in subsequent states.
+                run_using_encoders();
+
+                // Start the drive wheel motors at full power.
+                set_drive_power(1.0f, 1.0f);
+
+                // Have the motor shafts turned the required amount?
+                //
+                // If they haven't, then the op-mode remains in this state (i.e this
+                // block will be executed the next time this method is called).
+                if (have_drive_encoders_reached(2880, 2880)) {
+                    // Reset the encoders to ensure they are at a known good value.
+                    reset_drive_encoders();
+
+                    // Stop the motors.
+                    set_drive_power(0.0f, 0.0f);
+
+                    // Transition to the next state when this method is called
+                    // again.
+                    v_state++;
+                }
+                break;
+
+            // Wait...
+            case 2:
+                if (have_drive_encoders_reset()) {
+                    v_state++;
+                }
+                break;
+
+            // Turn left until the encoders exceed the specified values.
+            case 3:
+                run_using_encoders();
+                set_drive_power(-1.0f, 1.0f);
+                if (have_drive_encoders_reached(2880, 2880)) {
+                    reset_drive_encoders();
+                    set_drive_power(0.0f, 0.0f);
+                    v_state++;
+                }
+                break;
+
+            // Wait...
+            case 4:
+                if (have_drive_encoders_reset()) {
+                    v_state++;
+                }
+                break;
+
+            // Turn right until the encoders exceed the specified values.
+            case 5:
+                run_using_encoders();
+                set_drive_power(1.0f, -1.0f);
+                if (have_drive_encoders_reached(2880, 2880)) {
+                    reset_drive_encoders();
+                    set_drive_power(0.0f, 0.0f);
+                    v_state++;
+                }
+                break;
+
+            // Wait...
+            case 6:
+                if (have_drive_encoders_reset()) {
+                    v_state++;
+                }
+                break;
+
+            // Perform no action - stay in this case until the OpMode is stopped.
+            // This method will still be called regardless of the state machine.
+            default:
+                // The autonomous actions have been accomplished (i.e. the state has
+                // transitioned into its final state.
+                break;
+        }
+
+        // Send telemetry data to the driver station.
+        telemetry.addData("18", "State: " + v_state);
+
+    } // loop
+}
+</code></pre>
+
+<h4>New Style</h4>
+<pre><code>
+import org.ftc.opmodes.examples.pushbot.PushBotHardware;
+
+public class PushBotAutoFSM extends PushBotHardware {
+    /**
+     * This class member remembers which state is currently active.  \
+     */
+    private FiniteStateMachine&lt;States, PushBotAutoFSM&gt; fsm;
+
+    /**
+     * A workaround to access this outer class from the state machine
+     */
+    private static PushBotAutoFSM me;
+
+    /**
+     * Perform any actions that are necessary when the OpMode is enabled.
+     * &lt;p/&gt;
+     * The system calls this member once when the OpMode is enabled.
+     */
+    @Override
+    public void start() {
+        // Call the PushBotHardware (super/base class) start method.
+        super.start();
+
+        me = this;
+
+        // Reset the motor encoders on the drive wheels.
+        reset_drive_encoders();
+        fsm = new FiniteStateMachine&lt;States, PushBotAutoFSM&gt;(States.SYNC_HARDWARE, this);
+    } // start
+
+    /**
+     * Implement a state machine that controls the robot during auto-operation.
+     * The state machine uses a class member and encoder input to transition
+     * between states.
+     * &lt;p/&gt;
+     * The system calls this member repeatedly while the OpMode is running.
+     */
+    @Override
+    public void loop() {
+        fsm.execute();
+
+        // Send telemetry data to the driver station.
+        telemetry.addData("18", "State: " + fsm.state().name());
+
+    } // loop
+
+    enum States implements FiniteStateMachine.State {
+        /**
+         * Synchronize the state machine and hardware.
+         */
+        SYNC_HARDWARE {
+            @Override
+            public boolean stateChange() {
+                return true;
+            }
+
+            /**
+             * Reset the encoders to ensure they are at a known good value.
+             */
+            @Override
+            public void execute() {
+                me.reset_drive_encoders();
+            }
+        },
+        /**
+         * Drive forward until the encoders exceed the specified values.
+         */
+        DRIVE_FORWARD_1 {
+            /**
+             * Have the motor shafts turned the required amount?
+             *
+             * If they haven't, then the op-mode remains in this state (i.e this
+             * block will be executed the next time this method is called).
+             *
+             * @return true if the motor shafts have turned the desired amount, otherwise false
+             */
+            @Override
+            public boolean stateChange() {
+                if (me.have_drive_encoders_reached(2880, 2880)) {
+                    // Reset the encoders to ensure they are at a known good value.
+                    me.reset_drive_encoders();
+
+                    // Stop the motors.
+                    me.set_drive_power(0.0f, 0.0f);
+
+                    // Transition to the next state when this method is called
+                    // again.
+                    return true;
+                }
+
+                return false;
+            }
+
+            public void execute() {
+                // Tell the system that motor encoders will be used.  This call MUST
+                // be in this state and NOT the previous or the encoders will not
+                // work.  It doesn't need to be in subsequent states.
+                me.run_using_encoders();
+
+                // Start the drive wheel motors at full power.
+                me.set_drive_power(1.0f, 1.0f);
+            }
+        }, WAIT_1 {
+            @Override
+            public boolean stateChange() {
+                return me.have_drive_encoders_reset();
+            }
+
+            @Override
+            public void execute() {
+            }
+        },
+        /**
+         * Turn left until the encoders exceed the specified values.
+         */
+        TURN_1 {
+            @Override
+            public boolean stateChange() {
+                if (me.have_drive_encoders_reached(2880, 2880)) {
+                    me.reset_drive_encoders();
+                    me.set_drive_power(0.0f, 0.0f);
+                    return true;
+                }
+
+                return false;
+            }
+
+            @Override
+            public void execute() {
+                me.run_using_encoders();
+                me.set_drive_power(-1.0f, 1.0f);
+            }
+        },
+        /**
+         * Wait
+         */
+        WAIT_2 {
+            @Override
+            public boolean stateChange() {
+                return me.have_drive_encoders_reset();
+            }
+
+            @Override
+            public void execute() {}
+        },
+        /**
+         * Turn right until the encoders exceed the specified values.
+         */
+        TURN_2 {
+            @Override
+            public boolean stateChange() {
+                if (me.have_drive_encoders_reached(2880, 2880)) {
+                    me.reset_drive_encoders();
+                    me.set_drive_power(0.0f, 0.0f);
+                    return true;
+                }
+
+                return false;
+            }
+
+            @Override
+            public void execute() {
+                me.run_using_encoders();
+                me.set_drive_power(1.0f, -1.0f);
+            }
+        },
+        /**
+         * Wait
+         */
+        WAIT_3 {
+            @Override
+            public boolean stateChange() {
+                return me.have_drive_encoders_reset();
+            }
+
+            @Override
+            public void execute() {}
+        }
+    }
+}
+</code></pre>
+
+<h4>Using the more advanced FSM<small><a href=[[~89]]#></a></small></h4>
+<pre><code>
+import org.ftc.opmodes.examples.pushbot.PushBotHardware;
+
+public class PushBotAutoAdvancedFSM extends PushBotHardware {
+    /**
+     * This class member remembers which state is currently active.  \
+     */
+    private FiniteStateMachine2&lt;States, PushBotAutoAdvancedFSM&gt; fsm;
+
+    /**
+     * A workaround to access this outer class from the state machine
+     */
+    private static PushBotAutoAdvancedFSM me;
+
+    /**
+     * Perform any actions that are necessary when the OpMode is enabled.
+     * &lt;p/&gt;
+     * The system calls this member once when the OpMode is enabled.
+     */
+    @Override
+    public void start() {
+        // Call the PushBotHardware (super/base class) start method.
+        super.start();
+
+        me = this;
+
+        // Reset the motor encoders on the drive wheels.
+        reset_drive_encoders();
+        fsm = FiniteStateMachine2.create(States.SYNC_HARDWARE, this);
+    } // start
+
+    /**
+     * Implement a state machine that controls the robot during auto-operation.
+     * The state machine uses a class member and encoder input to transition
+     * between states.
+     * &lt;p/&gt;
+     * The system calls this member repeatedly while the OpMode is running.
+     */
+    @Override
+    public void loop() {
+        fsm.execute();
+
+        // Send telemetry data to the driver station.
+        telemetry.addData("18", "StateNode: " + fsm.state().name());
+
+    } // loop
+
+    enum States implements FiniteStateMachine2.State&lt;States&gt; {
+        /**
+         * Synchronize the state machine and hardware.
+         */
+        SYNC_HARDWARE {
+            @Override
+            public States stateChange() {
+                return DRIVE_FORWARD_1;
+            }
+
+            /**
+             * Reset the encoders to ensure they are at a known good value.
+             */
+            @Override
+            public void execute() {
+                me.reset_drive_encoders();
+            }
+        },
+        /**
+         * Drive forward until the encoders exceed the specified values.
+         */
+        DRIVE_FORWARD_1 {
+            /**
+             * Have the motor shafts turned the required amount?
+             *
+             * If they haven't, then the op-mode remains in this state (i.e this
+             * block will be executed the next time this method is called).
+             *
+             * @return true if the motor shafts have turned the desired amount, otherwise false
+             */
+            @Override
+            public States stateChange() {
+                if (me.have_drive_encoders_reached(2880, 2880)) {
+                    // Reset the encoders to ensure they are at a known good value.
+                    me.reset_drive_encoders();
+
+                    // Stop the motors.
+                    me.set_drive_power(0.0f, 0.0f);
+
+                    // Transition to the next state when this method is called
+                    // again.
+                    return configureWait(TURN_1);
+                }
+
+                return this;
+            }
+
+            public void execute() {
+                // Tell the system that motor encoders will be used.  This call MUST
+                // be in this state and NOT the previous or the encoders will not
+                // work.  It doesn't need to be in subsequent states.
+                me.run_using_encoders();
+
+                // Start the drive wheel motors at full power.
+                me.set_drive_power(1.0f, 1.0f);
+            }
+        },
+        /**
+         * Turn left until the encoders exceed the specified values.
+         */
+        TURN_1 {
+            @Override
+            public States stateChange() {
+                if (me.have_drive_encoders_reached(2880, 2880)) {
+                    me.reset_drive_encoders();
+                    me.set_drive_power(0.0f, 0.0f);
+                    return configureWait(TURN_2);
+                }
+
+                return this;
+            }
+
+            @Override
+            public void execute() {
+                me.run_using_encoders();
+                me.set_drive_power(-1.0f, 1.0f);
+            }
+        },
+        /**
+         * Turn right until the encoders exceed the specified values.
+         */
+        TURN_2 {
+            @Override
+            public States stateChange() {
+                if (me.have_drive_encoders_reached(2880, 2880)) {
+                    me.reset_drive_encoders();
+                    me.set_drive_power(0.0f, 0.0f);
+
+                    return configureWait(DONE);
+                }
+
+                return this;
+            }
+
+            @Override
+            public void execute() {
+                me.run_using_encoders();
+                me.set_drive_power(1.0f, -1.0f);
+            }
+        },
+        /**
+         * Wait
+         */
+        WAIT {
+            private States stateAfterwards;
+
+            @Override
+            public States stateChange() {
+                return me.have_drive_encoders_reset() ? nextStateAfterWait : this;
+            }
+
+            @Override
+            public void execute() {}
+        },
+        DONE {
+            @Override
+            public States stateChange() {
+                return this;
+            }
+
+            @Override
+            public void execute() { /* Do nothing */ }
+        }
+    };
+
+    private static States nextStateAfterWait;
+
+    /**
+     * Configures what the {@link States#WAIT} will return after the wait has finished
+     *
+     * @param stateAfterWait the state to go to after wait
+     * @return the &lt;code&gt;States.WAIT&lt;/code&gt; object
+     */
+    protected static States configureWait(States stateAfterWait) {
+        nextStateAfterWait = stateAfterWait;
+
+        return States.WAIT;
+    }
+}
+</code></pre>
+</div>

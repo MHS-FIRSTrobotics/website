@@ -1,0 +1,12 @@
+id: 8
+source: 1
+name: navbar-script
+description: ''
+category: Js
+properties: 'a:0:{}'
+
+-----
+
+<script>
+$(document).ready(function(){if(location.pathname!="/"){$('#nav a[href^="/'+location.pathname.split("/")[1]+'"]').addClass('active');}else $('#sidebar a:eq(0)').addClass('active');});
+</script>

@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en" ng-app="scoutingApp">
+<head>
+    <meta charset="utf-8">
+    <base href="">
+    <title>Scouting</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <link href='http://fonts.googleapis.com/css?family=Share+Tech+Mono%7cCarme' rel='stylesheet' type='text/css'>
+    <script src="http://code.jquery.com/jquery-2.1.3.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+    <script src="assets/js/angular.min.js"></script>
+    <script src="assets/js/scouting.js"></script>
+    <link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+<div id="container" class="container-fluid">
+    <div id="sidebar">
+        <img id="logo-sidebar" src="assets/images/mustangroboticsw.png" alt="Mustang High School Robotics"
+             title="mhs | robotics logo" height="90" width="728"/>
+
+        <div id="items-sidebar">
+            <ul>
+                <li><a class="sidebar-item" id="home" href="#"><p>HOME</p></a></li>
+                <li><a class="sidebar-item" id="teams" href="#"><p>TEAMS</p></a>
+                    <ul class="sub-menu">
+                        <li><a class="sidebar-sub-item" id="5395" href="#"><p>-Team Clutch (5395)</p></a></li>
+                        <li><a class="sidebar-sub-item" id="6473" href="#"><p>-ModBots</p></a></li>
+                        <li><a class="sidebar-sub-item" id="6974" href="#"><p>-Luna</p></a></li>
+                        <li><a class="sidebar-sub-item" id="3466" href="#"><p>-Omega Factor</p></a></li>
+                        <li><a class="sidebar-sub-item" id="3465" href="#"><p>-Omega Factor (FRC)</p></a></li>
+                    </ul>
+                </li>
+                <li><a class="sidebar-item" id="sponsors" href="#"><p>SPONSORS</p></a></li>
+                <li><a class="sidebar-item" id="about-us" href="#"><p>ABOUT US</p></a></li>
+            </ul>
+        </div>
+    </div>
+    <div id="page">
+        <div id="page-content" class="scouter">
+            <div id="FormPreview" ng-controller="ReviewPreviewController as previewCtrl">
+                <div id="form" class="input-form" style="font-size:1.5em;">
+                    <form novalidate class="form-horizontal">
+                        <div class="form-group">
+                            <label class="teamNumber" for="teamNumber">Team Number: </label>
+                            <input id="teamNumber" ng-model="previewCtrl.review.teamNumber" name="teamNumber">
+                        </div>
+                        <div class="form-group">
+                            <label class="teamName" for="teamName">Team Name: </label>
+                            <input id="teamName" ng-model="previewCtrl.review.teamName" name="teamNumber">
+                        </div>
+                        <div class="form-group radio">
+                            <label class="radio-for-label" for="teleopRatingOptions">Teleop: </label>
+                            <div id="teleopRatingOptions">
+                            <label class="radio-inline">
+                                <input ng-model="previewCtrl.review.teleopRating" type="radio"
+                                       name="teleopRatingOptions" id="teleOpRating1"
+                                       value="1"> 1
+                            </label>
+                            <label class="radio-inline">
+                                <input ng-model="previewCtrl.review.teleopRating" type="radio"
+                                       name="teleopRatingOptions" id="teleopRating2" value="2"> 2
+                            </label>
+                            <label class="radio-inline">
+                                <input ng-model="previewCtrl.review.teleopRating" type="radio"
+                                       name="teleopRatingOptions" id="teleopRating3" value="3"> 3
+                            </label>
+                            <label class="radio-inline">
+                                <input ng-model="previewCtrl.review.teleopRating" type="radio"
+                                       name="teleopRatingOptions" id="teleopRating4" value="4"> 4
+                            </label>
+                            <label class="radio-inline">
+                                <input ng-model="previewCtrl.review.teleopRating" type="radio"
+                                       name="teleopRatingOptions" id="teleopRating5" value="5"> 5
+                            </label>
+                            <label class="radio-inline">
+                                <input ng-model="previewCtrl.review.teleopRating" type="radio"
+                                       name="teleopRatingOptions" id="teleopRating6" value="6"> 6
+                            </label>
+                            <label class="radio-inline">
+                                <input ng-model="previewCtrl.review.teleopRating" type="radio"
+                                       name="teleopRatingOptions" id="teleopRating7" value="7"> 7
+                            </label>
+                            <label class="radio-inline">
+                                <input ng-model="previewCtrl.review.teleopRating" type="radio"
+                                       name="teleopRatingOptions" id="teleopRating8" value="8"> 8
+                            </label>
+                            <label class="radio-inline">
+                                <input ng-model="previewCtrl.review.teleopRating" type="radio"
+                                       name="teleopRatingOptions" id="teleopRating9" value="9"> 9
+                            </label>
+                            <label class="radio-inline">
+                                <input ng-model="previewCtrl.review.teleopRating" type="radio"
+                                       name="teleopRatingOptions" id="teleopRating10" value="10"> 10
+                            </label>
+                        </div>
+</div>
+                        <div class="form-group radio ">
+                            <label class="radio-for-label" for="autoRatingOptions">Autonomous:</label>
+                            <div id="autoRatingOptions">
+                            <label class="radio-inline">
+                                <input ng-model="previewCtrl.review.autoRating" type="radio" name="autoRatingOptions"
+                                       id="autoRating1" value="1"> 1
+                            </label>
+                            <label class="radio-inline">
+                                <input ng-model="previewCtrl.review.autoRating" type="radio" name="autoRatingOptions"
+                                       id="autoRating2" value="2"> 2
+                            </label>
+                            <label class="radio-inline">
+                                <input ng-model="previewCtrl.review.autoRating" type="radio" name="autoRatingOptions"
+                                       id="autoRating3" value="3"> 3
+                            </label>
+                            <label class="radio-inline">
+                                <input ng-model="previewCtrl.review.autoRating" type="radio" name="autoRatingOptions"
+                                       id="autoRating4" value="4"> 4
+                            </label>
+                            <label class="radio-inline">
+                                <input ng-model="previewCtrl.review.autoRating" type="radio" name="autoRatingOptions"
+                                       id="autoRating5" value="5"> 5
+                            </label>
+                            <label class="radio-inline">
+                                <input ng-model="previewCtrl.review.autoRating" type="radio" name="autoRatingOptions"
+                                       id="autoRating6" value="6"> 6
+                            </label>
+                            <label class="radio-inline">
+                                <input ng-model="previewCtrl.review.autoRating" type="radio" name="autoRatingOptions"
+                                       id="autoRating7" value="7"> 7
+                            </label>
+                            <label class="radio-inline">
+                                <input ng-model="previewCtrl.review.autoRating" type="radio" name="autoRatingOptions"
+                                       id="autoRating8" value="8"> 8
+                            </label>
+                            <label class="radio-inline">
+                                <input ng-model="previewCtrl.review.autoRating" type="radio" name="autoRatingOptions"
+                                       id="autoRating9" value="9"> 9
+                            </label>
+                            <label class="radio-inline">
+                                <input ng-model="previewCtrl.review.autoRating" type="radio" name="autoRatingOptions"
+                                       id="autoRating10" value="10"> 10
+                            </label>
+                                </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="pros" for="previewPros">Other Pros: </label><br>
+                            <textarea id="previewPros" rows="5" cols="80" name="previewPros"
+                                      ng-model="previewCtrl.review.otherPro"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="teamName pull-up" for="previewCons">Team Name: </label><br>
+                            <textarea id="previewCons" rows="5" cols="80" name="previewCons"
+                                      ng-model="previewCtrl.review.otherCon"></textarea>
+                        </div>
+                        <br>
+                        <button type="submit" class="btn pull-right" ng-click="previewCtrl.AddReview()">I'm done, submit
+                            by clicking me!
+                        </button>
+                    </form>
+                    <br><br>
+                </div>
+                <div id="scoutReview-previewDisplay">
+					<span class="scoutReview-head">Team number: <b>{{previewCtrl.review.teamNumber}}</b> <br>Team name: <b>{{previewCtrl.review.teamName}}</b><br>
+					Ratings:<br><span class="scoutReview-rating"> Auto - <b>{{previewCtrl.review.autoRating}}</b><br> Teleop - <b>{{previewCtrl.review.teleopRating}}</b></span><br>
+					Pros: <br><p class="scoutReview-ProCon">{{previewCtrl.review.otherPro}}</p><br>
+					Cons: <br><span class="scoutReview-ProCon">{{previewCtrl.review.otherCon}}</span><br></span>
+                </div>
+            </div>
+            <div ng-controller="ReviewFormController as reviewForm">
+                <p ng-repeat="review in reviewForm.reviews" id="scoutReview-display">
+			<span class="scoutReview-head">Team number: <b>{{review.teamNumber}}</b> <br>Team name: <b>{{review.teamName}}</b><br>
+			Ratings:<br><span class="scoutReview-rating"> Auto - <b>{{review.autoRating}}</b><br> Teleop - <b>{{review.teleopRating}}</b></span><br>
+			Pros: <br><span class="scoutReview-ProCon">{{review.otherPro}}</span><br>
+			Cons: <br><span class="scoutReview-ProCon">{{review.otherCon}}</span><br>
+			</span>
+                </p>
+            </div>
+            {{reviewData}}
+            <!--Stop here-->
+        </div>
+    </div>
+    </div>
+    <script>
+        if (!(window.File && window.FileReader && window.FileList)) {
+            alert('The File APIs are not supported!.')
+        }
+    </script>
+</body>
+</html>

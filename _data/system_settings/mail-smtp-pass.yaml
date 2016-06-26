@@ -1,0 +1,4 @@
+key: mail_smtp_pass
+value: '#MHSbots'
+xtype: text-password
+area: mail

@@ -1,0 +1,16 @@
+id: 17
+source: 1
+name: RoboticsSearchForm
+description: 'Chunk used for displaying the search form'
+category: Search
+properties: 'a:0:{}'
+
+-----
+
+<div class="form-group search_group">
+  <form id="search" action="[[~[[+landing:default=`[[*id]]`]]]]" method="[[+method:default=`post`]]">
+		  <input id="searchField" class="search_bar" type="search" name="search_field" placeholder="[[+searchValue:default=`Search for...`]]"/>
+		  <button id="searchIcon" ng-mouseover="focusSearch()" class="utilityButton btn btn-primary" type="submit"><i class="fa fa-search fa-2x"></i></button>
+		  <input type="hidden" name="id" value="[[+landing:default=[[*id]]]]" />
+  </form>
+</div>

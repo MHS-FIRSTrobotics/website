@@ -1,0 +1,55 @@
+@import "../branding"
+
+#sidebar ul, #sidebar li
+  list-style: none inside
+  margin: 0
+  padding: 0
+
+
+#sidebar ul.sub-menu 
+  display: none
+  width: 80%
+
+
+#sidebar li:hover > ul.sub-menu 
+  display: block
+  margin-left: 30%
+  background-color: $primary_color
+  float: right
+
+.navbar-inverse 
+  background-color: $primary_color
+
+a.sidebar-item, a.sidebar-item:hover
+  text-decoration: none
+  color: white
+  display: block
+  width: 100%
+  padding: 5%
+
+
+a.sidebar-item:hover
+  background-image: linear-gradient(to right, $primary_color 10%, $primary_color_light 50%)
+  font-weight: bold
+
+
+a.sidebar-sub-item, a.sidebar-sub-item:hover
+  text-decoration: none
+  background-color: $primary_color
+  color: white
+  display: block
+  width: 90%
+  padding: 2%
+  font-size: .85em
+  text-align: left
+  margin-left: 10%
+  margin-right: 0
+
+
+a.sidebar-sub-item:hover
+  background-image: linear-gradient(to right, $primary_color 10%, $primary_color_light 100%)
+
+#items-sidebar 
+  margin-top: 35%
+  width: 100%
+  display: block

@@ -1,0 +1,54 @@
+id: 69
+pagetitle: Electrical
+longtitle: 'Robotic Systems And Development (HINT: this pertains to electronics)'
+alias: electrical
+published: 1
+parent: 67
+introtext: ''
+template: 16
+menuindex: 1
+createdby: 1
+createdon: 1429144093
+publishedon: 1431570120
+publishedby: 1
+uri: resources/electrical.html
+properties: null
+tvs: {  }
+
+-----
+
+<div class="text-justify">
+<h3>How to Read a Schematic</h3>
+
+<p>Electronic circuits are presented in schematic form. A schematic is really a map showing the path the current takes through the various componenets. Each component is represented by a symbol, usually with either a label or a value (or both). The arrangement of the components on paper is chosen to make the function of the circuit clear, and usually only vaguely resembles the actual construction of the device. The current path is shown with lines, again drawn for maximum clarity, with little concern for the length or position of the real wires.</p>
+
+<p>There are some general conventions that apply to all schematics.</p>
+
+<p>The layout of a schematic is designed to show the function, usually with signal progressing from left to right. The actual layout of the circuit will be quite different.</p>
+
+<p>All points on a line are electrically identical. This includes all branches of a line. When we discuss the properties of circuits, we will assume the wires are perfect conductors, with no resistance or propagation delays of any kind. In fact, when we talk about real wire, we will make drawings the show ideal wire with components connected illustrating various effects.</p>
+
+<p>This symbol is ground. All ground points in the schematic are connected together. Furthermore, these points represent places in the circuit that are at 0 volts for reference in measurements. Often the ground includes the metal chassis of a device, but not always.</p>
+
+<p>Labels. Each component should have a label, and there is a standard set of names. For instance, a resistor is labeled R, and this circuit has 7 of them. Presumably there is a table somewhere that tells what the values are. There is only one capacitor; instead of calling it C1, I just listed its value.</p>
+
+
+<p>The gizmo at the left of figure 1 represents a phone jack. The label implies a guitar will be connected here. You have to understand that "signal" is not the same as "current". The current is the flow of electrons, the signal is the flow of information. The current is going every which way in this circuit, alternating directions in fact. The signal is supposed to come from the guitar and wind up at the speaker on the far right. The route is complex, with each component working with others to modify the signal in some manner. (If your get nothing out of this essay but the fact that it is the combination of components that modifies the signal, you are ahead of the game.) Let's work our way through :<p>
+<p>
+The symbols at Guitar in represent the parts of a quarter inch jack. Notice that part of the jack is connected to ground (This is the part that connects to the outer shield of the cable). Remember that means it is actually connected to all parts of the circuit with the ground symbol. This is the path the return current takes, in essence flowing back to the guitar. The part of the current we consider the signal flows from the tip of the plug into the upper part of the schematic.
+</p><p>
+Each zig-zag line represents a resistor. This is a simple device that has a desired resistance. These serve to control the proportion of current or signal that follows each branch of a circuit. Resister 1 establishes the input impedance, or the load that this device shows to the guitar.
+</p><p>
+Two lines interrupting the circuit line represent a capacitor. Most of the time the feature of a capacitor we are most interested in is the ability to block low frequency signals. In this case, we want to keep any constant voltage (DC) from the guitar away from the active components, and any DC the active components may have away from the guitar. The actual frequency that will be blocked depends on the values of R2 and R1. (Note: values for capacitors are given in microfarads. The proper symbol for this is the Greek letter mu and an f. many programs don't property display this, turning the mu into an m. which strictly speaking would be "milifarads", however, microfarads is the usual intention.)
+</p><p>
+The triangle represents a rather complicated integrated circuit called an operational amplifier. They are complicated to design and make, but pretty simple to use. The signal is connected to one of the two inputs, and appears at the output. A connection from the output back to the inverting input (with the minus sign) controls the amount of gain the op amp will give us. This kind of connection is called feedback. Simply connecting the output to the inverting input sets the gain at unity- no change in the signal level. The purpose of the op amp in this circuit is to reduce the amount of current the guitar must supply
+</p><p>
+The resistor with an arrow in the middle is a variable resistor or potentiometer. This is the thing that most control knobs are attached to. If you conceive of the arrow as moving up and down across the resistance, you can visualize a varying proportion of the current being drawn off, or the voltage at the arrow changing. The configuration shown is a typical volume control.
+</p><p>
+Adding resistors to the feedback of an opamp gives gains other than unity. In this case, the ratio of R4 to R5 sets the gain. U2 provides the muscle in this circuit, providing power to drive the speaker. The last resistor, R7, protects the speaker from too much current. It also protects the op amp, which may be cooked if it is asked to provide too much.
+</p><p>
+To keep the power supply connections distinct from the signal connections, I have used the solid arrows to indicate power buses (a buss is a wire or trace that connects to several places in a circuit.). All of the upward pointing arrows are connected together, and all of the downward pointing arrows are connected. In complex circuits you will see a lot of this trick, often with numbered or lettered connections.
+</p>
+</div>
+</div>
+<small>Source: http://artsites.ucsc.edu/EMS/Music/tech_background/schematics/ReadSchem.html (WARNING: blatantly copied and pasted from the source)</small

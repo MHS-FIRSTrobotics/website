@@ -1,0 +1,19 @@
+
+[
+	{
+		"teamNumber": 3465,
+		"teamName":"Omega Factor",
+		"autoRating": 10,
+		"teleopRating": 7,
+		"otherPro": "Strong Yellow Bin",
+		"otherCon": "foo"
+	},
+	{
+		"teamNumber": 3466,
+		"teamName": "FooBars",
+		"autoRating": 10,
+		"teleopRating": 7,
+		"otherPro": "Strong Yellow Bin",
+		"otherCon": "foo"
+	}
+]

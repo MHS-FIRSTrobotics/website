@@ -1,0 +1,114 @@
+id: 73
+pagetitle: 'Material FTC App'
+longtitle: 'Material Designed FTC App and Automous Framework'
+description: 'A port of the official FTC App that has more compliance with Android Material Design, and also includes a in-progress autonomous framework layout for writing FTC autonomous programs.'
+alias: material-ftc-app
+published: 1
+parent: 75
+isfolder: 1
+introtext: 'A port of the official FTC App that is available at https://github.com/ftctechnh/ftc_app that is more compliant with Android Material Design. This also includes a in-progress autonomous system layout to make a programmer''s life easier when writing autonomous programs.'
+richtext: 0
+template: 16
+createdby: 1
+createdon: 1436551960
+publishedon: 1436576100
+publishedby: 1
+uri: resources/programming/projects/material-ftc-app/
+properties: null
+tvs: {  }
+
+-----
+
+<div class="text-justify">
+<lead>Available on GitHub at: <a href="https://github.com/MHS-FIRSTrobotics/ftc_app-material">https://github.com/MHS-FIRSTrobotics/ftc_app-material</a></lead>
+<h2>Material Design</h2>
+<p>
+The GUI of the app has some minor changes to the robot side graphical user interface. Please note: that some informational text that is present in the official version has been removed.
+</p>
+<div class="center-block">
+<div class="text-center" style="width:50%; float: left;">
+<img class="center-block img-responsive" src="assets/images/examples/ftc_app-material-a.png" alt="Material FTC App" style="width:50%; height: auto;" />
+<small class="text-center">Alternate unofficial Material GUI</small>
+</div>
+<div class="text-center" style="width:50%; float:right;">
+<img class="center-block img-responsive" src="assets/images/examples/ftc_app-material-b.png" alt="Material FTC App" style="width:50%; height: auto;" />
+<small class="text-center">Alternate About Activty</small>
+</div>
+</div>
+<h2>Autonomous framework</h2>
+<p>This is implemented using a set of objects called RunLevels. Each RunLevel is designed to execute a specific task (think of it as a stage above a method, it runs the your methods to do a specific thing, like driving down a ramp.) For example, you want to build an automous program, that drives forward, turns, and starts following a line. A RunLevel does a specific task. So, in the example
+the RunLevels would be ran in the following order:
+<br><lead class="text-center" style="padding: 2%">
+<ol>
+<li>InitPhase (initialization of the OpMode) -></li>
+<li>RunLevel1 (in this case, drive forward; it can be called anything) -> </li>
+<li> RunLevel2 (in the case, turn; again, can be called anything) -></li>
+<li> FollowALine (an example of properly naming a RunLevel) -></li>
+<li> FinishLevel (the same as the closing in the OpMode and runs at the same time)</li>
+</ol>
+</lead><br>
+each the amount names and positions of the RunLevels do not matter as they are passed by reference as an array to then Automounous, so each RunLevel can be disabled, moved around, or executed more than once by modifying a the Array initialize in your AutoMode. For example:<br>
+<code><pre>
+RunLevel[] foo = {
+       new InitLevel(), //You must put your init level in the array, somewhere (for now, put it first)
+       new RunLevel1(), //This starts the execute section of the array
+       new RunLevel2(),
+       new FollowALine(),
+       new FinishLevel() // Also, you must put your finish level somewhere
+}
+</pre></code>
+</p><p>
+<h3>Goal</h3>
+The goal of this is it provide an alternate form of OpMode (currently called "AutoMode") that provides basic functionality of a linear programming model. This should work by creating a "RobotState," a thread-safe object that when the main OpMode loops, it calls a "SyncState" method  to handle all of the read/writes to the controller during the loop. The AutoMode executes an Autonomous-based class. The Automous class does the following:
+<ul>
+<li>- Verify state</li>
+<li>- Run minimal OpModes (RunLevels)<li>
+<li>- Runs an init RunLevel (this is similiar to the begin method in an OpMode)</li>
+<li>- Runs a cleanup RunLevel (this is similiar to the end method in an OpMode)</li>
+<li>- Provides a "safe" RunLevel to restore the robot to a known state</li>
+<li>- Each RunLevel has two "safe" methods: one that returns, and one that doesn't. This is explained later.</i>
+</ul>
+</p>
+
+<h3>Down to the details</h3>
+<p>The automounous framework needs a minimal of three RunLevels and can have a theoricatal maximum of that of the maximum integer, with any defination of what is the init, safe, and cleanup RunLevels. The init and cleanup RunLevels cannot be the same runlevel, but the safe RunLevel can be any RunLevel, used for the main program, the init RunLevel, or the cleanup RunLevel. Each RunLevel implements the interface RunLevel which provides the functions that can be called be the Autonomous thread. The default code for a RunLevel is:
+<code><pre>
+class InitLevel implements RunLevel {
+        public int execute() {
+            //TODO: write code that is composes your init state
+            return 0;
+        }
+
+        public void close() {
+            //TODO: write your code to cleanup to prevent leakage
+        }
+
+        // This runs when you want or when a negative error code is returned from execute, or
+        // when a exeception is thrown in execute, the return value specifies whether to continue
+        // with the next state or not.
+        public boolean safe() {
+            //TODO: write  your code that runs if an error occurs
+            return false;
+        }
+
+        public int safe(int errorCode) {
+            //TODO: write your code that runs if a error occurs that is positive
+
+            //Uncomment the following line to always run the default safe
+            //safe();
+
+            //Returning a non-zero number runs  standard safe
+            return 0;
+        }
+    }
+</pre></code>
+</p>
+
+<p>Each RunLevel has its execute function called first, then based on the integer it returns one of three options occur:
+<ul>
+<li>- The RunLevel returns 0 (all is well), and then runs the next level immediately, if in the main running of the program</li>
+<li>- The RunLevel returns a integer greater than 0. The safe function is run to correct anything that went wrong, if a non-zero exit is encountered, the safe method is ran</li>
+<li>- The RunLevel throws, or a negative exit of execute means that the safe method is ran, based on the return value, it is determined whether or not to run the next RunLevel.
+</ul>
+
+</div>

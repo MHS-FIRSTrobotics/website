@@ -1,0 +1,13 @@
+id: 4
+type: richtext
+name: blogContent
+caption: blogContent
+description: 'RTE for the new blog entries'
+category: 'Demo Content'
+elements: ''
+display: RichText
+default_text: ''
+properties: null
+input_properties: null
+output_properties: null
+content: ''

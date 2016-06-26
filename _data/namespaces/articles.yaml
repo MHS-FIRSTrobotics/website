@@ -1,0 +1,3 @@
+name: articles
+path: '{core_path}components/articles/'
+assets_path: '{assets_path}components/articles/'

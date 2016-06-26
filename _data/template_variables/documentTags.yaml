@@ -1,0 +1,12 @@
+id: 6
+type: text
+name: documentTags
+caption: Tags
+description: 'Space delimited tags for the current document'
+category: 'Demo Content'
+elements: ''
+default_text: ''
+properties: null
+input_properties: null
+output_properties: null
+content: ''

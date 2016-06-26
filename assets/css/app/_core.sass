@@ -1,0 +1,67 @@
+@import "core/bare"
+@import "core/navbar"
+@import "core/branding"
+
+.error 
+  margin-top: 10%
+  width: 75%
+  text-align: center
+
+
+p.error 
+  margin-left: 15%
+
+
+h1.error 
+  margin-left: 15%
+  text-align: left
+
+
+blockquote 
+  font-family: $serif_stack
+
+
+blockquote.error 
+  margin-top: 0
+  width: 80%
+  margin-left: 11%
+
+hr
+  border-top: 1px solid invert($primary_color)
+
+img
+  width: 90%
+  height: auto
+
+$footer_height: 200px
+
+#footer
+  width: 85%
+  height: $footer_height
+  position: absolute
+  bottom: 0
+  right: 0
+  background-color: $primary_color
+  color: white
+  padding: 1% 5% 5%
+
+#footer a
+  color: white
+
+$footer_num_of_cols: 2
+#footer #legal
+  text-align: center
+  float: left
+  width: percentage(1 / $footer_num_of_cols)
+
+#footer #social-media
+  text-align: center
+  float: left
+  width: percentage(1 / $footer_num_of_cols)
+
+.wrapper
+  position: relative
+  min-height: 100%
+
+#content
+  padding-bottom: $footer_height * 1.4

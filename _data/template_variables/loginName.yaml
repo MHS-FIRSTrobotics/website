@@ -1,0 +1,14 @@
+id: 5
+type: text
+name: loginName
+caption: loginName
+description: 'Conditional name for the Login menu item'
+category: 'Demo Content'
+elements: ''
+properties: null
+input_properties: null
+output_properties: null
+
+-----
+
+@EVAL if ($modx->getLoginUserID()) return 'Logout'; else return 'Login';

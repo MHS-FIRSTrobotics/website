@@ -1,0 +1,101 @@
+id: 76
+pagetitle: API
+longtitle: 'Application Programming Interface (or just API, for most people)'
+alias: api
+parent: 73
+introtext: ''
+richtext: 0
+template: 17
+createdby: 1
+createdon: 1437032433
+uri: resources/programming/projects/material-ftc-app/api.html
+properties: '{"markdowneditor":{"markdown":"{\"ta\":\"\"}"}}'
+tvs: {  }
+
+-----
+
+<p>The Autonomous framework exposes various functionality present in the stable FTC SDK, and attempts to simplify the syntax of calling the functions in the FTC SDK running the autonomous program, i.e. the following would be used to call a motor</p>
+<pre><code>Motor left_motor=state.getMotor(<span class="hljs-string">"red"</span>);
+
+<span class="hljs-comment">//The following illustrates the overloads that set speeds</span>
+left_motor.setSpeed(<span class="hljs-number">90</span>);  <span class="hljs-comment">//Assign a speed in a percentage of max speed (100%)</span>
+left_motor.setSpeed(<span class="hljs-number">.90</span>); <span class="hljs-comment">//Assign a speed the percentage as a double</span>
+
+state.getMotor(<span class="hljs-string">"red"</span>).setSpeed(<span class="hljs-number">.90</span>);  <span class="hljs-comment">// Set the motor speed without using a variable</span>
+</code></pre>
+<p>The state object or an otherwise defined proxing object will be present to do actions like passing variables between objects, and getting the various motors defined by the programmer by a common name that they set, i.e. you tell your state object about your motor which your building tell as color coded &quot;red&quot;, and is located in upper left of the robot. Since you don't want to name each motor <code>red-upper_left</code>,  <code>black-lower_left</code></p>
+<p>You can use the following:</p>
+<pre><code><span class="hljs-keyword">new</span> Motor(hw_name, the_name_you_want);
+
+<span class="hljs-comment">//Example</span>
+<span class="hljs-keyword">new</span> Motor(<span class="hljs-string">"red-drive"</span>, <span class="hljs-string">"left-drive"</span>);  <span class="hljs-comment">// Use the motor named "red-drive", and give yourself an alias "left-drive"</span>
+<span class="hljs-comment">// Don't use any alias</span>
+<span class="hljs-keyword">new</span> Motor(<span class="hljs-string">"red-drive"</span>) <span class="hljs-comment">// the motor would still be accessable via the name "red-drive" as the alias is now red-drive</span>
+</code></pre>
+<p>Each type of object will be available via the exact same procedure  by the time we hit version 1. The currently supported hardware is:</p>
+<ul>
+<li>Motors</li>
+<li>Servos</li>
+<li>IR Sensors</li>
+</ul>
+<h3>Auto Mode</h3>
+<p>The AutoMode is the tie-in into the OpMode, as it currently exists. It utilizes the constructor to start the framework, right now you have to bootstrap the framework in the AutoMode.</p>
+<p>An example of bootstraping the framework (located in <code>Opmodes\ExampleAutoMode.java</code>):</p>
+<pre><code><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">ExampleAutoMode</span><span class="hljs-params">()</span> </span>{
+        <span class="hljs-comment">// Put your RunLevels here</span>
+        RunLevel[] levels = <span class="hljs-keyword">new</span> RunLevel[]{
+                <span class="hljs-keyword">new</span> BasicLevels.InitLevel(),
+                <span class="hljs-keyword">new</span> BasicLevels.Level1(),
+                <span class="hljs-keyword">new</span> BasicLevels.Level2(),
+                <span class="hljs-keyword">new</span> BasicLevels.Level3(),
+
+                <span class="hljs-comment">// An example of disabling a level</span>
+
+                <span class="hljs-comment">//new BasicLevels.Level4(),</span>
+
+                <span class="hljs-keyword">new</span> BasicLevels.StopLevel()
+        };
+
+        <span class="hljs-comment">// Tell RobotState about your motors to use</span>
+        state = <span class="hljs-keyword">new</span> RobotState(<span class="hljs-keyword">new</span> Motor[]{
+                <span class="hljs-keyword">new</span> Motor(<span class="hljs-string">"motor_1"</span>, <span class="hljs-string">"left_front-drive"</span>),
+                <span class="hljs-keyword">new</span> Motor(<span class="hljs-string">"motor_2"</span>, <span class="hljs-string">"right_front-drive"</span>),
+                <span class="hljs-keyword">new</span> Motor(<span class="hljs-string">"motor_3"</span>, <span class="hljs-string">"left_rear-drive"</span>),
+                <span class="hljs-keyword">new</span> Motor(<span class="hljs-string">"motor_4"</span>, <span class="hljs-string">"right_rear-drive"</span>)
+        }, <span class="hljs-keyword">new</span> Servo[]{
+                <span class="hljs-keyword">new</span> Servo(<span class="hljs-string">"servo_1"</span>, <span class="hljs-string">"doer_of_something_of_the_kingdom_of_foo"</span>)
+        });
+
+        state.AddIR_Seeker(<span class="hljs-keyword">new</span> IrSensor(<span class="hljs-string">"ir_1"</span>, <span class="hljs-string">"main_IR"</span>));
+
+        <span class="hljs-comment">// Build the autonomous object</span>
+        auto = <span class="hljs-keyword">new</span> Autonomous(levels, state);
+
+        <span class="hljs-comment">/* Optional
+        // Set the states to their defaults
+        runner.setInitState(0);
+        runner.setSafeState(levels.length - 1);
+        runner.setFinishState(levels.length - 1);
+        */</span>
+
+        <span class="hljs-comment">// TODO: write your constructor here</span>
+    }
+    
+</code></pre>
+<h4>Breakdown</h4>
+<p>Line 1:  <code>public ExampleAutoMode()</code>  - This begins a parameter-less constructor for building the object state, and making it's state safe (i.e. no object is  null).</p>
+<p>Line 2:  <code>// Put your RunLevels</code>  - This is a Java comment; they begin with  <code>\\</code>  (an single line comment, terminated by a new line which is a  <code>\n</code>),  <code>/*</code> (a block comment, terminated by  <code>*/</code>), or a <code>/**</code> (a Javadoc comment, terimated by <code>*/</code></p>
+<p>Line 3:  <code>RunLevel[] levels = {...}</code>  - This is standard Java array syntax; each of your own RunLevel names are put here via the syntax <code>new class_name _that _implements _RunLevel(),</code> where the comma is required if there is another line following the current line that is not a bracket, <code>}</code>,</p>
+<p>Line 17:  <code>state = new RobotState() {...}</code>  - This builds the RobotState object that provides your hardware and maintains it for use by each RunLevel during its execution, this class, and the Autonomous class.</p>
+<p>Line ?: <code>auto = new Autonomous(levels, state);</code> - Builds the Autonomous and passes the levels array, and the <code>RobotState</code> object, state.</p>
+<p>Line ?+2:  This part is to initialize your values and do anything your heart desires in your constructor.</p>
+<p><a name="general"></a></p>
+<h3>General Hardware Functions (Motors, Servos, ...)</h3>
+<p>Each constructor has two overloads: one with just a hardware name paramter and one with the hardware name <strong>plus a parameter for the your name for the motor</strong>.  Your name is for the motor, or the piece of hardware, is referred to as a <em>common name</em>. The common name is an alias to the motor to be used in any way your team wants. If you do not specify a common name, the hardware map name is used instead , and becomes the alias.</p>
+<p><code>GetName</code> -  returns the common name for the piece of hardware</p>
+<p><code>GetHWName</code> - returns the name within the hardware map for the specific piece of hardware</p>
+<p><code>GetSpeed</code> -  returns the speed that was wrote last, or the current speed of the motor</p>
+<p><code>SetSpeed</code> -  sets the speed of the motor. The behavior will scale and round the power; such that 100%+ = 1, 90=.9, 80=.8,  ... -90% = -0.9, -100+= -1. In future verisons, a scaling algorithm can be specified, so that you can dynamically do more interesting things that give a greater speed control, and that will be avialable to teleop programs such as making full throttle as fast as you can, while keeping error-prone operations steady.</p>
+<p><code>SetSpeedHW</code> - This writes the currently queued speed to the official FTC SDK looping control to prevent undefined behavior when the speed is changed by the automounous program.</p>
+<h3>General Servo Function (IR Sensors, Touch Sensors)</h3>
+<p>Please see the Motor Function constructors section for constructor usage. You can find  this a the top of the above section, or <a href="[[~[[*id]]]]#general">here</a></p>

@@ -1,0 +1,4 @@
+key: manager_theme
+value: mustang
+xtype: modx-combo-manager-theme
+area: manager

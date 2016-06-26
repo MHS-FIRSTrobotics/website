@@ -1,0 +1,82 @@
+id: 5
+source: 1
+name: MustangRobotNavbar
+description: 'The Mustang Robotics Navbar'
+category: Content
+locked: 1
+properties: 'a:0:{}'
+
+-----
+
+<!--Begin Desktop Navbar-->
+<div id="sidebar" class="hidden-sm-down">
+	<div style="position: relative; height: 100%">
+	<a href="//mustangrobotics.club" title="Mustang Robotics"><img id="logo-sidebar" class="img-fluid" src="//mustangrobotics.club/assets/images/mustangroboticsw.png" alt="Mustang High School Robotics" title="Mustang Robotics" height="87" width="697" /></a>
+	[[$Search]]
+
+	  <navbar id="items-sidebar" style="padding-bottom: 35%;">
+
+		  <ul>
+			  <li><a class="sidebar-item" id="home" href="//mustangrobotics.club"><p>HOME</p></a></li>
+			  <li>
+				  <a class="sidebar-item" id="teams" href="[[~7]]"><p>TEAMS</p></a>
+				  <ul class="sub-menu">
+					  <li><a class="sidebar-sub-item" id="5395" href="[[~10]]"><p>Team Clutch</p></a></li>
+					  <li><a class="sidebar-sub-item" id="3465" href="[[~14]]"><p>Omega Factor</p></a></li>
+				  </ul>
+			  </li>
+			  <li><a class="sidebar-item"  id="resources" href="[[~67]]"><p>RESOURCES</p></a>
+				  <ul class="sub-menu">
+					  <li><a  class="sidebar-sub-item" id="electrical-menu" href="[[~69]]"><p>Electrical</p></a></li>
+					  <li><a  class="sidebar-sub-item" id="programming-menu" href="[[~71]]"><p>Programming</p></a></li>
+					  <li><a  class="sidebar-sub-item" id="safety-menu" href="[[~70]]"><p>Safety</p></a></li>
+					  <li><a  class="sidebar-sub-item" id="cad-menu" href="[[~68]]"><p>CAD</p></a></li>
+				  </ul>
+			  </li>
+		  <li><a class="sidebar-item" id="sponsors" href="[[~16]]"><p>SPONSORS</p></a></li>
+		  <li><a class="sidebar-item" id="about-us" href="[[~17]]"><p>ABOUT US</p></a></li>
+		  </ul>
+	  </navbar>
+	</div>
+</div>
+<!--End Navbar-->
+<!--Begin Mobile Navbar-->
+<div id="mobile-sidebar" class="hidden-md-up">
+	<nav class="navbar navbar-inverse navbar-fixed-top">
+		<div class="container-fluid">
+			<div class="navbar-header">
+					<button style="background-color: black; border: none;" stype="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#mobile-navbar-collapse">
+						<i class="fa fa-bars"></i>
+					</button>
+					<a class="navbar-brand" href="#" style="display:block; width:30%">
+						<img style="margin-left:-3%; width:100%; height:auto; display:block" src="//mustangrobotics.club/assets/images/mustangroboticsw.png" alt="mhs | robotics" title="Mustang High School Robotics" height="87" width="697" />
+					</a>
+			</div>
+
+			<div class="collapse navbar-collapse" id="mobile-navbar-collapse">
+      			<ul class="nav navbar-nav navbar-right">
+					<li class="nav-item"><a class="nav-link msidebar-item" id="home" href="[[~5]]"><p>HOME</p></a></li>
+					<li class="nav-item dropdown">
+						<a class="nav-link msidebar-item dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" id="teams" href="[[~7]]">TEAMS</a>
+						<div class="dropdown-menu" role="menu">
+							<a class="dropdown-item msidebar-item" id="5395" href="[[~10]]"><p>Team Clutch (5395)</p></a>
+							<a class="dropdown-item msidebar-item" id="3465" href="[[~14]]"><p>Omega Factor (FRC)</p></a>					
+						</div>
+					</li>
+					<li class="nav-item dropdown">
+						<a class="nav-link msidebar-item dropdown-toggle"  date-toggle="dropdown" role="button" aria-expaned="false" id="resources" href="[[~67]]">RESOURCES</a>
+						<div class="dropdown-menu" role="menu">
+							<a class="dropdown-item msidebar-item" id="electrical-menu" href="[[~69]]"><p>Electrical</p></a>
+							<a class="dropdown-item msidebar-item" id="programming-menu" href="[[~71]]"><p>Programming</p></a>
+							<a class="dropdown-item msidebar-item" id="safety-menu" href="[[~70]]"><p>Safety</p></a>
+							<a class="dropdown-item msidebar-item" id="cad-menu" href="[[~68]]"><p>CAD</p></a>
+						</div>
+					</li>
+				  <li class="nav-item"><a class="nav-link msidebar-item" id="sponsors" href="[[~16]]"><p>SPONSORS</p></a></li>
+				  <li class="nav-item"><a class="nav-link msidebar-item" id="about-us" href="[[~17]]"><p>ABOUT US</p></a></li>
+	  			</ul>
+			</div>
+		</div>
+	</nav>
+</div>
+<!--End Navbar-->

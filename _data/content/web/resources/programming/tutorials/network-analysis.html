@@ -1,0 +1,401 @@
+id: 90
+pagetitle: 'Network Analysis'
+longtitle: 'Anaylzing the Current Network Enviroment'
+alias: network-analysis
+published: 1
+parent: 84
+introtext: ''
+richtext: 0
+template: 16
+menuindex: 1
+createdby: 1
+createdon: 1454892166
+publishedon: 1454892175
+publishedby: 1
+uri: resources/programming/tutorials/network-analysis.html
+properties: null
+tvs: {  }
+
+-----
+
+<div class="text-left">
+<p>Lots of people on the limited space for Wi-Fi bands causes issues. Channels get crowded easily with multiple <abbr>AP</abbr> broadcasting extremely quickly, especially in a case like what we see in the communcation for the FTC Robot Controller and Driver Station. This can be somewhat remedied by lowering the bandwidth of the broadcasting, and by lowering the Tx power on the APs. Then, everyone needs to be on a diverse array of channels to make everything perfom at its best, just imagine over 60 APs all in a relatively small room on at the same time. The transfer speeds could easily be disastrously low in an application where having speed is an important asset.</p>
+
+<p>Lots of people really don't want to buy inSSIDer (or find a free version) or learn how to use Wireshark, so they should have a free easy-to-use alternative to them. This is why we wrote the Network Analyis OpModes.
+
+<h2>Why do I need Guava to use this?</h2>
+<p>Guava is providing some useful things to make writing this type of <code>OpMode</code> easier to write, such as a <code>HashBiMap</code> and the <code>Files</code> utility class. We can do this (and we will do this) without Guava, but the code is going to be harder to write.</p>
+
+<h2>Breakdown</h2>
+<p>The Android API reports the frequency via an integer. A list of the of the 2.4GHz frequencies versus channels is below:
+<dl>
+	<dt>Frequency 2412</dt>
+	<dl>2.4 GHz Channel 1</dl>
+	<dt>Frequency 2417</dt>
+	<dl>2.4 GHz Channel 2</dl>
+	<dt>Frequency 2422</dt>
+	<dl>2.4 GHz Channel 3</dl>
+	<dt>Frequency 2427</dt>
+	<dl>2.4 GHz Channel 4</dl>
+	<dt>Frequency 2432</dt>
+	<dl>2.4 GHz Channel 5</dl>
+	<dt>Frequency 2437</dt>
+	<dl>2.4 GHz Channel 6</dl>
+	<dt>Frequency 2442</dt>
+	<dl>2.4 GHz Channel 7</dl>
+	<dt>Frequency 2447</dt>
+	<dl>2.4 GHz Channel 8</dl>
+	<dt>Frequency 2452</dt>
+	<dl>2.4 GHz Channel 9</dl>
+	<dt>Frequency 2457</dt>
+	<dl>2.4 GHz Channel 10</dl>
+	<dt>Frequency 2462</dt>
+	<dl>2.4 GHz Channel 11</dl>
+	<dt>Frequency 2467</dt>
+	<dl>2.4 GHz Channel 12</dl>
+	<dt>Frequency 2472</dt>
+	<dl>2.4 GHz Channel 13</dl>
+	<dt>Frequency 2484</dt>
+	<dl>2.4 GHz Channel 14</dl>
+</dl>
+</p>
+
+<p>Android stores the configuration file at <code>/data/misc/wifi/p2p_supplicant.conf/</code>, but unless you can figure out how to access the file, you will not know the channel that the P2P service of Android is broadcasting over.</p>
+
+<p>Since the results are not immediately available, but instead are found via the result of a callback, the current channels need a non-null value, like an empty string, but why put a empty string when you could type something more useful
+
+
+
+<a name="source"></a><h2>Sources</h2>
+<a name="opmodes"></a>
+<h3>Standard FTC SDK<small> With Guava</small></h3>
+<p>
+<pre><code>
+public class NetworkAnalyzer extends OpMode {
+    private WifiManager wifi;
+    private String mostCommon = "None";
+    private String secondMostCommon = "None";
+
+    private HashBiMap&lt;Integer, String&gt; wifiChannelMap;
+    private String operChannel;
+    private String recChannel = "Not Ready";
+
+    @Override
+    public void init() {
+        wifiChannelMap = HashBiMap.create();
+        wifiChannelMap.put(2412, "2.4G Ch01");
+        wifiChannelMap.put(2417, "2.4G Ch02");
+        wifiChannelMap.put(2422, "2.4G Ch03");
+        wifiChannelMap.put(2427, "2.4G Ch04");
+        wifiChannelMap.put(2432, "2.4G Ch05");
+        wifiChannelMap.put(2437, "2.4G Ch06");
+        wifiChannelMap.put(2442, "2.4G Ch07");
+        wifiChannelMap.put(2447, "2.4G Ch08");
+        wifiChannelMap.put(2452, "2.4G Ch09");
+        wifiChannelMap.put(2457, "2.4G Ch10");
+        wifiChannelMap.put(2462, "2.4G Ch11");
+        wifiChannelMap.put(2467, "2.4G Ch12");
+        wifiChannelMap.put(2472, "2.4G Ch13");
+        wifiChannelMap.put(2484, "2.4G Ch14");
+
+        wifi = (WifiManager) hardwareMap.appContext.getSystemService(Context.WIFI_SERVICE);
+        hardwareMap.appContext.registerReceiver(new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                LinkedList&lt;ScanResult&gt; results = new LinkedList&lt;ScanResult&gt;(wifi.getScanResults());
+                scanResults(results);
+            }
+        }, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
+
+        wifi.startScan();
+
+        try {
+            String absolutePath = hardwareMap.appContext.getFilesDir().getAbsolutePath() + "/";
+            RunShellCommand cmd = new RunShellCommand();
+            String output;
+            if ((output = cmd.run(String.format("cp /data/misc/wifi/p2p_supplicant.conf %sp2p_supplicant.conf \n", absolutePath))).length() &gt; 0) {
+                RobotLog.e("Cannot copy p2p file" + output);
+                operChannel = output;
+            }
+
+
+            String fileData = Files.toString(new File(absolutePath + "p2p_supplicant.conf"), Charset.defaultCharset());
+            String[] datas = fileData.split("/n");
+            for (String data : datas) {
+                if (data.contains("p2p_oper_channel")) {
+                    operChannel = data.substring(data.indexOf("="));
+                }
+            }
+        } catch (IOException ex) {
+            if (operChannel.equals("")) {
+                operChannel = ex.getMessage();
+            }
+        }
+    }
+
+    @Override
+    public void loop() {
+        telemetry.addData("Most Common Freq: ", mostCommon);
+        telemetry.addData("Second Most Common Freq: ", secondMostCommon);
+        telemetry.addData("Recommended Channel", recChannel);
+        telemetry.addData("Current Channel: ", operChannel);
+    }
+
+    private void scanResults(LinkedList&lt;ScanResult&gt; results) {
+        HashMap&lt;Integer, Integer&gt; frequencyCount = new HashMap&lt;Integer, Integer&gt;();
+        for (ScanResult result : results) {
+            WifiManager.calculateSignalLevel(result.level, 100);
+
+            if (frequencyCount.containsKey(result.frequency)) {
+                int count = frequencyCount.get(result.frequency);
+                frequencyCount.put(result.frequency, ++count);
+            } else {
+                frequencyCount.put(result.frequency, 1);
+            }
+
+            RobotLog.d("Network on: " + wifiChannelMap.get(result.frequency));
+        }
+        RobotLog.d("Done displaying networks!");
+
+        LinkedList&lt;Map.Entry&lt;Integer, Integer&gt;&gt; frequencies = new LinkedList&lt;Map.Entry&lt;Integer, Integer&gt;&gt;(frequencyCount.entrySet());
+        Collections.sort(frequencies, new Comparator&lt;Map.Entry&lt;Integer, Integer&gt;&gt;() {
+            @Override
+            public int compare(Map.Entry&lt;Integer, Integer&gt; lhs, Map.Entry&lt;Integer, Integer&gt; rhs) {
+                if (lhs.equals(rhs)) {
+                    return 0;
+                }
+
+                if (lhs.getValue() &gt; rhs.getValue()) {
+                    return 1;
+                } else if (lhs.getValue() &lt; rhs.getValue()) {
+                    return -1;
+                } else {
+                    return 0;
+                }
+            }
+        });
+
+        if (frequencies.size() &gt; 0) {
+            int location = frequencies.size() - 1;
+            mostCommon = wifiChannelMap.containsKey(frequencies.get(location).getKey()) ?
+                wifiChannelMap.get(frequencies.get(location).getKey()) : "5 GHz";
+        }
+
+        if (frequencies.size() &gt; 1) {
+            int location = frequencies.size() - 2;
+            secondMostCommon = wifiChannelMap.containsKey(frequencies.get(location).getKey()) ?
+                    wifiChannelMap.get(frequencies.get(location).getKey()) : "5 GHz";
+        }
+
+        recChannel = recommendedChannel();
+    }
+
+    private String recommendedChannel() {
+        int mostCommonChannel = wifiChannelMap.inverse().get(mostCommon);
+        int secondMostCommonChannel = wifiChannelMap.inverse().get(secondMostCommon);
+
+        int[] recommendations = secondMostRecommended(secondMostCommonChannel);
+        if (mostCommonChannel &lt;= 2422) { // Most Common is Channel 1-3
+            if (recommendations[0] &gt; 2452) {
+                return wifiChannelMap.get(recommendations[0]);
+            } else {
+                return wifiChannelMap.get(recommendations[1]);
+            }
+        } else if (mostCommonChannel &lt; 2452) { // Channel 4-9
+            if (recommendations[0] &lt;= 2422) {
+                return wifiChannelMap.get(recommendations[0]);
+            } else {
+                return wifiChannelMap.get(recommendations[1]);
+            }
+        } else { // Channel 9-14
+            if (recommendations[0] &lt; 2452) {
+                return wifiChannelMap.get(recommendations[0]);
+            } else {
+                return wifiChannelMap.get(recommendations[1]);
+            }
+        }
+    }
+
+    private int[] secondMostRecommended(int secondChannel) {
+        int[] results = new int[2];
+
+        if (secondChannel &lt;= 2422) { // Channel 1-3
+            results[0] = 2462; // Channel 11
+            results[1] = 2437; // Channel 6
+        } else if (secondChannel &lt; 2452) { // Channel 4-9
+            results[0] = 2412; // Channel 1
+            results[1] = 2462; // Channel 11
+        } else { // Channel 9-14
+            results[0] = 2412; // Channel 1
+            results[1] = 2437; // Channel 6
+        }
+
+        return results;
+    }
+}
+</code></pre>
+</p>
+<h3>Xtensible Library</h3>
+<p>
+<pre><code>
+@Autonomous
+public class xNetworkAnalyzer extends SimpleOpMode {
+    private WifiManager wifi;
+    private String mostCommon = "None";
+    private String secondMostCommon = "None";
+
+    private HashBiMap&lt;Integer, String&gt; wifiChannelMap;
+    private String operChannel;
+    private String recChannel = "Not Ready";
+
+    @Override
+    public void init(RobotContext ctx) throws Exception {
+        wifiChannelMap = HashBiMap.create();
+        wifiChannelMap.put(2412, "2.4G Ch1");
+        wifiChannelMap.put(2417, "2.4G Ch2");
+        wifiChannelMap.put(2422, "2.4G Ch3");
+        wifiChannelMap.put(2427, "2.4G Ch4");
+        wifiChannelMap.put(2432, "2.4G Ch5");
+        wifiChannelMap.put(2437, "2.4G Ch6");
+        wifiChannelMap.put(2442, "2.4G Ch7");
+        wifiChannelMap.put(2447, "2.4G Ch8");
+        wifiChannelMap.put(2452, "2.4G Ch9");
+        wifiChannelMap.put(2457, "2.4G Ch10");
+        wifiChannelMap.put(2462, "2.4G Ch11");
+        wifiChannelMap.put(2467, "2.4G Ch12");
+        wifiChannelMap.put(2472, "2.4G Ch13");
+        wifiChannelMap.put(2484, "2.4G Ch14");
+
+        wifi = (WifiManager) appContext().getSystemService(Context.WIFI_SERVICE);
+        appContext().registerReceiver(new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                LinkedList&lt;ScanResult&gt; results = new LinkedList&lt;&gt;(wifi.getScanResults());
+                scanResults(results);
+            }
+        }, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
+
+        wifi.startScan();
+
+        try {
+            String absolutePath = appContext().getFilesDir().getAbsolutePath() + "/";
+            RunShellCommand cmd = new RunShellCommand();
+            String output;
+            if ((output = cmd.run(String.format("cp /data/misc/wifi/p2p_supplicant.conf %sp2p_supplicant.conf \n", absolutePath))).length() &gt; 0) {
+                log().e(this.getClass().getSimpleName(), "Cannot copy p2p file" + output);
+                operChannel = output;
+            }
+
+
+            String fileData = Files.toString(new File(absolutePath + "p2p_supplicant.conf"), Charset.defaultCharset());
+            String[] datas = fileData.split("/n");
+            for (String data : datas) {
+                if (data.contains("p2p_oper_channel")) {
+                    operChannel = data.substring(data.indexOf("="));
+                }
+            }
+        } catch (FileNotFoundException ex) {
+            if (operChannel.equals("")) {
+                operChannel = ex.getMessage();
+            }
+        }
+    }
+
+    @Override
+    public void loop(RobotContext ctx) throws Exception {
+        telemetry.data("Most Common Freq: ", mostCommon);
+        telemetry.data("Second Most Common Freq: ", secondMostCommon);
+        telemetry.data("Recommended Channel", recChannel);
+        telemetry.data("Current Channel: ", operChannel);
+    }
+
+    private void scanResults(LinkedList&lt;ScanResult&gt; results) {
+        HashMap&lt;Integer, Integer&gt; frequencyCount = new HashMap&lt;&gt;();
+        for (ScanResult result : results) {
+            WifiManager.calculateSignalLevel(result.level, 100);
+
+            if (frequencyCount.containsKey(result.frequency)) {
+                int count = frequencyCount.get(result.frequency);
+                frequencyCount.put(result.frequency, ++count);
+            } else {
+                frequencyCount.put(result.frequency, 0);
+            }
+        }
+
+        LinkedList&lt;Map.Entry&lt;Integer, Integer&gt;&gt; frequencies = new LinkedList&lt;&gt;(frequencyCount.entrySet());
+        Collections.sort(frequencies, new Comparator&lt;Map.Entry&lt;Integer, Integer&gt;&gt;() {
+            @Override
+            public int compare(Map.Entry&lt;Integer, Integer&gt; lhs, Map.Entry&lt;Integer, Integer&gt; rhs) {
+                if (lhs.equals(rhs)) {
+                    return 0;
+                }
+
+                if (lhs.getValue() &gt; rhs.getValue()) {
+                    return 1;
+                } else if (lhs.getValue() &lt; rhs.getValue()) {
+                    return -1;
+                } else {
+                    return 0;
+                }
+            }
+        });
+
+        if (frequencies.size() &gt; 0) {
+            mostCommon = wifiChannelMap.containsKey(frequencies.get(0).getKey()) ?
+                wifiChannelMap.get(frequencies.get(0).getKey()) : "5 GHz";
+        }
+
+        if (frequencies.size() &gt; 1) {
+            secondMostCommon = wifiChannelMap.containsKey(frequencies.get(1).getKey()) ?
+                    wifiChannelMap.get(frequencies.get(1).getKey()) : "5 GHz";
+        }
+
+        recChannel = recommendedChannel();
+    }
+
+    private String recommendedChannel() {
+        int mostCommonChannel = wifiChannelMap.inverse().get(mostCommon);
+        int secondMostCommonChannel = wifiChannelMap.inverse().get(secondMostCommon);
+
+        int[] recommendations = secondMostRecommended(secondMostCommonChannel);
+        if (mostCommonChannel &lt;= 2422) { // Most Common is Channel 1-3
+            if (recommendations[0] &gt; 2452) {
+                return wifiChannelMap.get(recommendations[0]);
+            } else {
+                return wifiChannelMap.get(recommendations[1]);
+            }
+        } else if (mostCommonChannel &lt; 2452) { // Channel 4-9
+            if (recommendations[0] &lt;= 2422) {
+                return wifiChannelMap.get(recommendations[0]);
+            } else {
+                return wifiChannelMap.get(recommendations[1]);
+            }
+        } else { // Channel 9-14
+            if (recommendations[0] &lt; 2452) {
+                return wifiChannelMap.get(recommendations[0]);
+            } else {
+                return wifiChannelMap.get(recommendations[1]);
+            }
+        }
+    }
+
+    private int[] secondMostRecommended(int secondChannel) {
+        int[] results = new int[2];
+
+        if (secondChannel &lt;= 2422) { // Channel 1-3
+            results[0] = 2462; // Channel 11
+            results[1] = 2437; // Channel 6
+        } else if (secondChannel &lt; 2452) { // Channel 4-9
+            results[0] = 2412; // Channel 1
+            results[1] = 2462; // Channel 11
+        } else { // Channel 9-14
+            results[0] = 2412; // Channel 1
+            results[1] = 2437; // Channel 6
+        }
+
+        return results;
+    }
+}
+</code></pre>
+</p>
+</div>

@@ -1,0 +1,4 @@
+key: updater.send_notification_hours
+value: '24'
+namespace: updater
+area: '(1) Notifications: General'

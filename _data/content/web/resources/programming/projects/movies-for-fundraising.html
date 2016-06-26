@@ -1,0 +1,244 @@
+id: 96
+pagetitle: 'Movies For Fundraising'
+alias: movies-for-fundraising
+published: 1
+parent: 75
+introtext: ''
+richtext: 0
+template: 23
+menuindex: 2
+createdby: 1
+createdon: 1459910311
+publishedon: 1460163660
+publishedby: 1
+uri: resources/programming/projects/movies-for-fundraising.html
+properties: null
+tvs: {  }
+
+-----
+
+<!DOCTYPE html>
+<html lang="en" ng-app="form">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Take Your Team to the Movies</title>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
+          integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+    <style>
+        html {
+            background-color: #151515;
+            color: white;
+        }
+
+        body {
+            background-color: #151515;
+            color: white;
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        h1, h2, h3 {
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        #movie-recommend {
+            margin: 0 10%;
+        }
+
+        #results {
+            font-size: 2.5em;
+            text-align: center;
+            margin: 10%;
+        }
+
+        #error {
+            color: #FF5252;
+            font-size: 2.5em;
+            text-align: center;
+            margin: 10%;
+        }
+
+        #loading-spinner {
+            text-align: center;
+            margin: 10%;
+        }
+
+        input.ng-invalid.ng-touched {
+            background-color: #FA787E;
+        }
+
+        input.ng-valid.ng-touched {
+            background-color: #78FA89;
+        }
+    </style>
+    <noscript>
+        <link href='https://fonts.googleapis.com/css?family=Open+Sans|Montserrat:700' rel='stylesheet' type='text/css'>
+    </noscript>
+</head>
+<body class="container-fluid">
+<h1 class="text-center">Need to pick a movie, but unsure how good it is?</h1>
+<div id="app" ng-controller="recommender">
+    <form name="movieForm" id="movie-recommend" class="form-horizontal" no-validate>
+        <div class="form-group">
+            <label for="movie">Movie</label>
+            <input type="text" class="form-control" id="movie" name="movie" placeholder="The Matrix" ng-model="movie"
+                   required>
+        </div>
+        <div class="form-group">
+            <label for="retweets">How many retweets did you get (or you would have gotten)?</label>
+            <input name="retweets" type="number" class="form-control" id="retweets" placeholder="0" ng-model="retweets"
+                   required>
+        </div>
+        <div class="form-group">
+            <label for="favorites">How many stars, favorites, or likes did you get?</label>
+            <input type="number" class="form-control" id="favorites" placeholder="0" ng-model="likes" required>
+        </div>
+        <button ng-disabled="movieForm.movie.$error.required || movieForm.retweets.$error.required" type="submit"
+                ng-click="submit()" class="btn btn-primary">Let's see how good it is
+        </button>
+    </form>
+    <p id="results" ng-show="hasResults && !resultsPending && error == ''">I would think that would be a
+        <b>{{result}}</b> of 10.</p>
+    <p ng-show="resultsPending" id="loading-spinner"><i class="fa fa-circle-o-notch fa-4x fa-spin"></i></p>
+    <p id="error" ng-show="error != '' && !resultsPending">{{error}}</p>
+</div>
+<script type="text/javascript">
+    WebFontConfig = {
+        google: {families: ['Open+Sans::latin', 'Montserrat:700:latin']}
+    };
+    (function () {
+        var wf = document.createElement('script');
+        wf.src = 'https://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js';
+        wf.type = 'text/javascript';
+        wf.async = 'true';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(wf, s);
+    })(); </script>
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="/assets/js/bootstrap.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular.min.js"></script>
+<script>
+    // Closure
+    (function () {
+        /**
+         * Decimal adjustment of a number.
+         *
+         * @param {String}  type  The type of adjustment.
+         * @param {Number}  value The number.
+         * @param {Integer} exp   The exponent (the 10 logarithm of the adjustment base).
+         * @returns {Number} The adjusted value.
+         */
+        function decimalAdjust(type, value, exp) {
+            // If the exp is undefined or zero...
+            if (typeof exp === 'undefined' || +exp === 0) {
+                return Math[type](value);
+            }
+            value = +value;
+            exp = +exp;
+            // If the value is not a number or the exp is not an integer...
+            if (isNaN(value) || !(typeof exp === 'number' && exp % 1 === 0)) {
+                return NaN;
+            }
+            // Shift
+            value = value.toString().split('e');
+            value = Math[type](+(value[0] + 'e' + (value[1] ? (+value[1] - exp) : -exp)));
+            // Shift back
+            value = value.toString().split('e');
+            return +(value[0] + 'e' + (value[1] ? (+value[1] + exp) : exp));
+        }
+
+        // Decimal round
+        if (!Math.round10) {
+            Math.round10 = function (value, exp) {
+                return decimalAdjust('round', value, exp);
+            };
+        }
+        // Decimal floor
+        if (!Math.floor10) {
+            Math.floor10 = function (value, exp) {
+                return decimalAdjust('floor', value, exp);
+            };
+        }
+        // Decimal ceil
+        if (!Math.ceil10) {
+            Math.ceil10 = function (value, exp) {
+                return decimalAdjust('ceil', value, exp);
+            };
+        }
+    })();
+
+    angular.module('form', [])
+            .controller('recommender', ['$scope', function ($scope) {
+                $scope.master = {};
+                $scope.hasResults = false;
+                $scope.movie = "The Matrix";
+                $scope.result = 7.3;
+                $scope.resultsPending = false;
+                $scope.error = "";
+
+
+                $scope.submit = function () {
+                    $.get('https://www.omdbapi.com/?t=' + $scope.movie, function (data) {
+                        $scope.error = "";
+                        var movie = angular.fromJson(data);
+                        if (movie.Response == "True") {
+                            console.log(movie.Title);
+                            var id = movie.imdbID.substr(2);
+                            console.log(id);
+                            $scope.resultsPending = true;
+                            $scope.$apply();
+                            var request = {
+                                "Inputs": {
+                                    "input1": {
+                                        "ColumnNames": [
+                                            "Movie ID",
+                                            "Retweet Count",
+                                            "Favorite Count",
+                                            "Time Zone"
+                                        ],
+                                        "Values": [
+                                            [
+                                                id,
+                                                $scope.retweets,
+                                                $scope.likes,
+                                                "Unknown"
+                                            ]
+                                        ]
+                                    }
+                                },
+                                "GlobalParameters": {}
+                            };
+                            var api_req = angular.toJson(request);
+                            console.log(api_req);
+                            $.post('/assets/php/projects/movie/movie-api.php', api_req)
+                                    .done(function (api_data) {
+                                        console.log("Response: " + api_data);
+                                        var response = angular.fromJson(api_data);
+                                        if (response.Results != null) {
+                                            $scope.result = Math.round10(response.Results.output1.value.Values[0], -1);
+                                            $scope.hasResults = true;
+                                            $scope.resultsPending = false;
+                                            console.log($scope.result);
+
+                                            $scope.$apply();
+                                        }
+                                    })
+                        } else {
+                            console.log("Movie not found!");
+                            $scope.error = "I don't know about " + '"' + $scope.movie + '" Sorry about that  :(';
+                            $scope.$apply();
+                        }
+                    });
+                    //$scope.hasResults = true;
+                };
+
+            }]);
+</script>
+</body>
+</html>

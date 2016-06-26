@@ -1,0 +1,96 @@
+id: 71
+pagetitle: Programming
+longtitle: 'Robot Science (Programming The Bots!)'
+alias: programming
+published: 1
+parent: 67
+isfolder: 1
+introtext: ''
+template: 16
+menuindex: 3
+createdby: 1
+createdon: 1429144298
+publishedon: 1431570120
+publishedby: 1
+uri: resources/programming/
+properties: '{"markdowneditor":{"markdown":"{\"ta\":\"<div class=\\\"text-justify\\\"\\r\\n<p>Yeah, you noticed we need to add a few things. We are still working on it!<\\\/p>\\r\\n<h2>But  for now, enjoy what we have!<\\\/h2>\\r\\n<h3>FIRST Robot Controller JavaDocs<\\\/h3>\\r\\n<p>A single page containing the core of the FTC Robot Controller JavaDocs can be found <a href=\\\"[[~82]]\\\">here<\\\/a>.\\r\\n<hr>\\r\\n<h3>Our Projects<\\\/h3>\\r\\n<ul>\\r\\n<li>Xtensible Library: documentation (coming) <a href=\\\"https:\\\/\\\/github.com\\\/dmssargent\\\/Xtensible-ftc_app\\\">GitHub<\\\/a>\\r\\n<li>Configuration and Setup Tools: <a href=\\\"[[~73]]\\\">documentation<\\\/a> <a href=\\\"#\\\">Github<\\\/a><\\\/li>\\r\\n\\r\\n<li>Material Design (not feasible on current FTC code, due to the nature of it being closed source): <a href=\\\"[[~73]]\\\">documentation<\\\/a> <a href=\\\"https:\\\/\\\/github.com\\\/MHS-FIRSTrobotics\\\/ftc_app-material\\\">GitHub<\\\/a><\\\/li>\\r\\n<li>Autonomous Framework: (moved to Xtensible Library)<\\\/li>\\r\\n<\\\/ul>\\r\\n<h2>This is our demo code <small>(we know it doesn''t do much on this platform, but give a moment to get code that does)<\\\/h2><\\\/small>\\r\\n<pre><code>\\r\\n#include &lt;iostream&gt;\\r\\n\\r\\nint main() {\\r\\n    std::cout<<\\\"Hello, World! I can finally see you.\\\";\\r\\n    system(\\\"PAUSE\\\");\\r\\n    return 202;\\r\\n}\\r\\n<\\\/code><\\\/pre>\\r\\n<\\\/div>\"}"}}'
+tvs: {  }
+
+-----
+
+<div class="text-justify">
+<p>Yeah, you noticed we need to add a few things. We are still working on it!</p>
+<h2>But  for now, enjoy what we have!</h2>
+<h3>FIRST Robot Controller JavaDocs</h3>
+<p>A single page containing the core of the FTC Robot Controller JavaDocs can be found <a href="[[~82]]">here</a>.
+<hr>
+<h3>Our Projects</h3>
+<ul>
+<li>Xtensible Library: documentation (coming) <a href="https://github.com/dmssargent/Xtensible-ftc_app">GitHub</a>
+<li>Configuration and Setup Tools: <a href="[[~73]]">documentation</a> <a href="#">Github</a></li>
+<li>Material Design <small>(not feasible on current FTC code, due to the nature of it being closed source)</small>: <a href="[[~73]]">documentation</a> <a href="https://github.com/MHS-FIRSTrobotics/ftc_app-material">GitHub</a></li>
+<li>Autonomous Framework: (moved to Xtensible Library)</li>
+<li>Network Analysis OpMode Example <a href="[[~90]]">docs</a> <a href="#">GitHub</a></li>
+<li>Finite State Machine: A Better Model <a href="[[~91]]">docs</a> <a href="[[~91]]#examples">examples</a> <a href="[[~91]]#source">source</a>
+</ul>
+<h2>This is our demo code</h2>
+<pre><code>
+
+package org.ftc.opmodes;
+
+import org.ftccommunity.ftcxtensible.opmodes.Autonomous;
+import org.ftccommunity.ftcxtensible.robot.ExtensibleOpMode;
+import org.ftccommunity.ftcxtensible.robot.RobotContext;
+import org.ftccommunity.ftcxtensible.robot.RobotStatus;
+
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.logging.Level;
+
+@Autonomous(name = "Hello World Example")
+public class HelloWorld extends ExtensibleOpMode {
+    @Override
+    public void init(RobotContext ctx, LinkedList&lt;Object&gt; out) throws Exception {
+        ctx.enableNetworking().startNetworking();
+    }
+
+    @Override
+    public void init_loop(RobotContext ctx, LinkedList&lt;Object&gt; out) throws Exception {
+
+    }
+
+    @Override
+    public void start(RobotContext ctx, LinkedList&lt;Object&gt; out) throws Exception {
+        ctx.telemetry().data("TIME", "Start Date: " +
+                (new Date(System.nanoTime() / 1000)).toString());
+    }
+
+    @Override
+    public void loop(RobotContext ctx, LinkedList&lt;Object&gt; out) throws Exception {
+        ctx.status().log(Level.INFO, "LOOP", "Current loop count: " + getLoopCount());
+        ctx.telemetry().data("MESS", "Hello, World!");
+        ctx.telemetry().data("MESS", "How are you doing?");
+    }
+
+    @Override
+    public void stop(RobotContext ctx, LinkedList&lt;Object&gt; out) throws Exception {
+        ctx.status().log(Level.WARNING, "TIME", "End Date: " +
+                (new Date(System.nanoTime() / 1000)).toString() + "This ran for " + getRuntime());
+    }
+
+    @Override
+    public void onSuccess(RobotContext ctx, Object event, Object in) {
+        // Don't worry about this; it is used for the advanced stuff
+    }
+
+    @Override
+    public int onFailure(RobotContext ctx, RobotStatus.Type eventType, Object event, Object in) {
+        // Return the default value; for when things go south
+        return -1;
+    }
+}
+
+</code>
+<a class="text-right" style="color: black; margin-left:95%; margin-right:0;" href="https://mustangrobotics.club/editor.html?url=https://raw.githubusercontent.com/dmssargent/Xtensible-ftc_app/master/OpModeLibrary/src/main/java/org/ftc/opmodes/HelloWorld.java" title="Edit Hello World"><i class="fa fa-pencil"></i></a>
+</pre>
+</div>
