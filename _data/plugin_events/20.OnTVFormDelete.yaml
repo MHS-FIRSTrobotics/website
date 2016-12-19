@@ -1,0 +1,3 @@
+pluginid: 20
+event: OnTVFormDelete
+priority: 10

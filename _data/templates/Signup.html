@@ -1,0 +1,51 @@
+id: 25
+templatename: Signup
+description: 'Default minimal empty template (content returned only)'
+properties: 'a:0:{}'
+
+-----
+
+<!doctype html>
+<html lang="en" ng-app="member-signup">
+<head>
+  <meta charset="utf-8">
+  <base href="https://mustangrobotics.club/">
+  <title>[[*pagetitle]]</title>
+  <link href='//fonts.googleapis.com/css?family=Share+Tech+Mono|Carme' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.min.js"></script>
+
+	<link rel="stylesheet" href="assets/css/main.css">
+	<style>
+		html {
+			background: black;
+		}
+		
+		#page {
+			margin: 5%;
+			width: 90%;
+			background-color: rgba(255, 255, 255, 0.95);
+		}
+		
+		@media screen and (min-width: 768px) {
+			html {
+				background-color: #4F0000;
+			}
+		}
+		
+		@media screen and (max-width: 768px) {
+			html {
+				background-color: #FF0000;
+			}
+			
+			.mobile-hide {
+				display: none;
+			}
+		}
+	</style>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+</head>
+<body>
+[[*content]]
+	</body>
+</html>

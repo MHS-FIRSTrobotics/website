@@ -1,3 +1,4 @@
 key: which_editor
+value: CodeMirror
 xtype: modx-combo-rte
 area: editor

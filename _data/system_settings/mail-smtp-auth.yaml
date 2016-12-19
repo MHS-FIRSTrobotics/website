@@ -1,4 +1,4 @@
 key: mail_smtp_auth
-value: '1'
+value: '0'
 xtype: combo-boolean
 area: mail

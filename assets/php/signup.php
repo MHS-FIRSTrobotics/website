@@ -1,10 +1,14 @@
 <?php
-$data = ($_POST['student']);
+//$data = ($_POST['student']);
+$data = json_decode(file_get_contents('php://input'), true);
 if (!$data) {
-    $data = '{"name":"David","email":"dmssargent@yahoo.com","studentsParent":{"name":"Kevin","email":"kmssargent@sbcglobal.net"}}';
+    //$data = '{"name":"David","email":"dmssargent@yahoo.com","studentsParent":{"name":"Kevin","email":"kmssargent@sbcglobal.net"}}';
+    http_response_code(400);
+    die();
 }
-
-$json = json_decode($data, true);
+var_dump($data);
+$json = $data; //json_decode($data, true);
+echo json_encode($json);
 $parent = $json["studentsParent"];
 if (!($json["name"] && $json["email"])) {
     http_response_code(400);
@@ -20,9 +24,9 @@ if (!($parent["name"] && $parent["email"])) {
 //var_dump($parent);
 
 // Database login
-$username = "peoplepl_robsign";
+$username = "mhs_rbtsignup";
 $password = "UVQ*4jiqJN*k6s1v";
-$db_name = "peoplepl_mhsrobots_signup";
+$db_name = "mhs_rbtsignup";
 $hostname = "localhost";
 
 $dbh = mysqli_connect($hostname, $username, $password, $db_name);
@@ -45,7 +49,7 @@ if (!$dbh) {
 VALUES ('" . $json["name"] . "', '" . $json["email"] . "', '" .  $parent["name"] . "', '" . $parent["email"]."')";
 
     if (mysqli_query($dbh, $sql)) {
-        //echo "New record created successfully";
+        // echo "New record created successfully";
     } else {
         echo "Error: " . $sql . "<br>" . mysqli_error($dbh);
     }

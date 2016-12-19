@@ -1,0 +1,3 @@
+pluginid: 20
+event: OnPluginFormSave
+priority: 10

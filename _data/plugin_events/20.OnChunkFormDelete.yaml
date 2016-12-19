@@ -1,0 +1,3 @@
+pluginid: 20
+event: OnChunkFormDelete
+priority: 10

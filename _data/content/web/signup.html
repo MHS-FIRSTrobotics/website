@@ -1,0 +1,135 @@
+id: 86
+pagetitle: 'Sign Up'
+longtitle: 'Join Mustang Robotics'
+alias: signup
+published: 1
+introtext: ''
+richtext: 0
+template: 25
+menuindex: 11
+createdby: 1
+createdon: 1441853643
+publishedon: 1441853640
+publishedby: 1
+hidemenu: 1
+uri: signup.html
+properties: null
+tvs: {  }
+
+-----
+
+
+		<div id="page" ng-controller="signup">
+		
+		<div id="signupForm" class="responsive-container" ng-hide="verifyPage || confirm" ng-submit="verifyDetails()">
+			<h1>Want to join robotics? You are at the right place.</h1><br>
+		    <form class="form-horizontal">
+		        <div class="form-group">
+		            <label for="inputStudentName" class="col-sm-2 control-label">Student's Name</label>
+		            <div class="col-sm-10">
+		                <input ng-model="name" type="text" class="form-control" id="inputStudentName" placeholder="John Doe" value="{{name}}" required>
+		            </div>
+		        </div>
+		        <div class="form-group">
+		            <label for="studentEmail" class="col-sm-2 control-label">Student's Email 
+		            <small><abbr title="We need students to be able to rapidly communicate with other people, and email is a good stepping stone to reach that.">Why?</abbr></small></label>
+		            <div class="col-sm-10">
+		                <input ng-model="studentEmail" type="email" class="form-control" id="studentEmail" placeholder="john.doe@gmail.com" value="{{studentEmail}}" required>
+		                <div ng-show="studentEmailError"><p class="error">An student mustangps.org email address is <b>not</b> a valid email address.</p></div>
+		            </div>
+		        </div>
+		        <div class="form-group">
+		            <label for="parentName" class="col-sm-2 control-label">Parent's Name</label>
+		            <div class="col-sm-10">
+		                <input ng-model="parentName" type="text" class="form-control" id="parentName" placeholder="Mrs. Doe" value="{{parentName}}" required>
+		            </div>
+		
+		        </div>
+		        <div class="form-group">
+		            <label for="parentEmail" class="col-sm-2 control-label">Parent's Email</label>
+		            <div class="col-sm-10">
+		                <input ng-model="parentEmail" type="email" class="form-control" id="parentEmail" placeholder="mrs.doe@acme.com" value="{{parentEmail}}" required>
+		            </div>
+		        </div>
+		        <div class="form-group">
+		            <div class="col-sm-offset-2 col-sm-10">
+		                <button type="submit" class="btn btn-primary">Sign Up</button>
+		            </div>
+		        </div>
+		    </form>
+		</div>
+		
+		<div ng-show="isVerify()" id="verify">
+			<h1>Please make sure <b>everything</b> is right.</h1>
+		    <dl>
+		        <dt>Name</dt>
+		        <dd>{{name}}</dd>
+		        <dt>Email</dt>
+		        <dd>{{studentEmail}}</dd>
+		        <dt>Parent's Name</dt>
+		        <dd>{{parentName}}</dd>
+		        <dt>Parent's Email</dt>
+		        <dd>{{parentEmail}}</dd>
+		    </dl>
+		    <button ng-click="goBack()" class="btn btn-default">Go back</button>
+		    <button ng-click="submitDetails()" type="submit" class="btn btn-primary">Submit</button>
+		</div>
+		
+		<div ng-show="confirm" id="confirm">
+		    <h1>Submission Successful.</h1>
+		    <p class="lead">Please check for an email from us in 1-2 days. You and your respective parents will recieve more information about keeping informed of what is going on, but only once you (or your awesome student) has offically joined a team.</p>
+		</div>
+		</div>
+<script>
+	var app = angular.module("member-signup", []);
+	app.controller('signup', ['$scope', function($scope) {
+		$scope.verifyPage = false;
+		$scope.confirm = false;
+		$scope.studentEmailError = false;
+		
+		$scope.verifyDetails = function() {
+			var data = {
+				'name': $scope.name,
+				'email': $scope.studentEmail,
+				'parentName': $scope.parentName,
+				'parentEmail': $scope.parentEmail
+			};
+			var match = $scope.studentEmail.match(/[0-9]{1,5}\w*\@mustangps\.org/gi);
+			console.log(match);
+			if (match != null) {
+				$scope.studentEmailError = true;
+			} else {
+				$scope.studentEmailError = false;
+				console.log(data);
+				$scope.verifyPage = true;
+			}
+			
+		}
+		
+		$scope.isVerify = function() {
+			return $scope.verifyPage;
+		}
+		
+		$scope.goBack = function() {
+			$scope.verifyPage = false;
+			$scope.confirm = false;
+		}
+		
+		$scope.submitDetails = function() {
+				var data = {
+				'name': $scope.name,
+				'email': $scope.studentEmail,
+				'studentsParent': {
+					'name': $scope.parentName,
+					'email': $scope.parentEmail
+				}
+			};
+			$scope.verifyPage = false;
+			$.post('https://mustangrobotics.club/assets/php/signup.php', angular.toJson(data))
+				.done(function() {
+					console.log("Sucess");
+				});
+			$scope.confirm = true;
+		}
+	}]);
+</script>

@@ -1,4 +1,4 @@
 key: use_editor
-value: '0'
+value: '1'
 xtype: combo-boolean
 area: editor

@@ -1,4 +1,4 @@
 key: mail_use_smtp
-value: '1'
+value: '0'
 xtype: combo-boolean
 area: mail

@@ -1,5 +1,6 @@
 id: 5
 pagetitle: Home
+description: 'Welcome to Mustang Robotics, a strategic alliance between numerous FIRST Tech Challenge and FIRST Robotics Competition teams. We strive to empower youth to to great things while gaining life skills at the same time.'
 alias: home
 published: 1
 introtext: ''
@@ -17,6 +18,26 @@ tvs: {  }
 
 <h1></h1><img class="img-fluid" src="//mustangrobotics.club/assets/images/mustangrobotics.png" alt="mhs | robotics" height="90" width="728" /></h1>
 
-<div id="first_OK_video" class="embed-responsive embed-responsive-16by9" >
-<iframe src="https://www.youtube.com/embed/yz2REVwBaug?modestbranding=1&showinfo=0&rel=0&autohide=1" allowfullscreen></iframe>
+<div class="embed-responsive embed-responsive-16by9">
+	<div id="player"></div>
+	<script async defer>
+      var tag = document.createElement('script');
+      tag.setAttribute("defer", "");
+      tag.setAttribute("async", "")
+	  tag.setAttribute("type", "text/javascript");
+	  
+      tag.src = "https://www.youtube.com/iframe_api";
+      var firstScriptTag = document.getElementsByTagName('script')[0];
+      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+      
+      var player;
+      function onYouTubeIframeAPIReady() {
+        player = new YT.Player('player', {
+        	height: '390',
+          	width: '640',
+          	videoId: 'yz2REVwBaug'
+        });
+      }
+</script>
 </div>
+
